@@ -1,2 +1,2 @@
 pub mod stream;
-use stream::Stream;
+pub use stream::{Stream, ByteOrder};
