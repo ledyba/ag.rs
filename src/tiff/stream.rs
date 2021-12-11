@@ -4,24 +4,25 @@ pub struct Stream {
   file: std::fs::File,
 }
 
+#[derive(Copy, Clone)]
 pub enum ByteOrder {
   LittleEndian,
   BigEndian,
 }
 
 impl Stream {
-  fn open(path: &str) -> std::io::Result<Stream> {
+  pub fn open(path: &str) -> std::io::Result<Stream> {
     let file = std::fs::File::open(path)?;
     Ok(Self {
       file,
     })
   }
-  fn read_byte(&mut self) -> std::io::Result<u8> {
+  pub fn read_byte(&mut self) -> std::io::Result<u8> {
     let mut buff = [0u8];
     self.file.read_exact(&mut buff)?;
     Ok(buff[0])
   }
-  fn read_u16(&mut self, order: ByteOrder) -> std::io::Result<u16> {
+  pub fn read_u16(&mut self, order: ByteOrder) -> std::io::Result<u16> {
     let mut buff = [0u8, 0u8];
     self.file.read_exact(&mut buff)?;
     match order {
@@ -33,7 +34,7 @@ impl Stream {
       }
     }
   }
-  fn read_u32(&mut self, order: ByteOrder) -> std::io::Result<u32> {
+  pub fn read_u32(&mut self, order: ByteOrder) -> std::io::Result<u32> {
     let mut buff = [0u8, 0u8, 0u8, 0u8];
     self.file.read_exact(&mut buff)?;
     match order {
@@ -55,8 +56,12 @@ impl Stream {
       }
     }
   }
-  fn skip(&mut self, bytes: usize) -> std::io::Result<()> {
+  pub fn skip(&mut self, bytes: usize) -> std::io::Result<()> {
     self.file.seek(SeekFrom::Current(bytes as i64))?;
+    Ok(())
+  }
+  pub fn seek(&mut self, offset: usize) -> std::io::Result<()> {
+    self.file.seek(SeekFrom::Start(offset as u64))?;
     Ok(())
   }
 }
