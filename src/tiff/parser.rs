@@ -1,5 +1,6 @@
-use log::info;
-use super::{Stream, ByteOrder, Tiff, Entry};
+use log::{debug, info};
+use super::*;
+
 pub struct Parser {
   stream: Stream,
   byte_order: ByteOrder,
@@ -25,10 +26,10 @@ impl Parser {
     }
     let offset = self.read_u32()?;
     self.stream.seek(offset as usize);
-    let mut entries = Vec::<Entry>::new();
-    self.parse_image_file_directories(&mut entries)?;
+    let mut directories = Vec::<ImageFileDirectory>::new();
+    self.parse_image_file_directories(&mut directories)?;
     Ok(Tiff{
-      entries,
+      directories,
     })
   }
   fn read_u16(&mut self) -> std::io::Result<u16> {
@@ -37,20 +38,27 @@ impl Parser {
   fn read_u32(&mut self) -> std::io::Result<u32> {
     self.stream.read_u32(self.byte_order)
   }
-  fn parse_image_file_directories(&mut self, entries: &mut Vec<Entry>) -> anyhow::Result<()> {
+  fn parse_image_file_directories(&mut self, directories: &mut Vec<ImageFileDirectory>) -> anyhow::Result<()> {
     let num_entries = self.read_u16()?;
+    let mut entries = Vec::<Entry>::new();
     for i in 0..num_entries {
-      let tag = self.read_u16()?;
-      let data_type = self.read_u16()?;
+      let tag = Tag::from(self.read_u16()?);
+      let data_type = DataType::from(self.read_u16()?);
       let data_count = self.read_u32()?;
       let data_or_offset = self.read_u32()?;
-      info!("tag: {} type: {} count: {} val: {}", tag, data_type, data_count, data_or_offset);
+      debug!("tag: {:?} type: {:?} count: {} val: {}", tag, data_type, data_count, data_or_offset);
+      entries.push(Entry::Unknown(tag, data_type, data_count, data_or_offset))
     }
+    directories.push(ImageFileDirectory {
+      entries,
+    });
     let offset = self.read_u32()?;
     if offset != 0 {
+      debug!("Additional IFD at {}", offset);
       self.stream.seek(offset as usize);
-      return self.parse_image_file_directories(entries);
+      return self.parse_image_file_directories(directories);
     }
+    debug!("All IFDs are parsed.");
     Ok(())
   }
 }

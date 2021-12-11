@@ -1,14 +1,24 @@
 pub mod stream;
 pub mod parser;
+pub mod tag;
+pub mod data_type;
 
-use std::collections::HashMap;
-pub use stream::{Stream, ByteOrder};
-pub use parser::Parser;
+pub use stream::*;
+pub use parser::*;
+pub use tag::*;
+pub use data_type::*;
 
+#[derive(Clone, Debug)]
 pub enum Entry {
-
+  Unknown(Tag, DataType, u32, u32)
 }
 
+#[derive(Clone, Debug)]
+pub struct ImageFileDirectory {
+  entries: Vec<Entry>,
+}
+
+#[derive(Clone, Debug)]
 pub struct Tiff {
-  entries: Vec<Entry>
+  directories: Vec<ImageFileDirectory>,
 }
