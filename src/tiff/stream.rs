@@ -76,4 +76,19 @@ mod test {
     let result = stream.read_u16(ByteOrder::LittleEndian).expect("Failed to read");
     assert_eq!(result, 0x4949);
   }
+  #[test]
+  fn test_read_u32() {
+    {
+      let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
+      stream.skip(4).expect("Failed to skip");
+      let result = stream.read_u32(ByteOrder::LittleEndian).expect("Failed to read");
+      assert_eq!(result, 0x08);
+    }
+    {
+      let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
+      stream.skip(4).expect("Failed to skip");
+      let result = stream.read_u32(ByteOrder::BigEndian).expect("Failed to read");
+      assert_eq!(result, 0x08000000);
+    }
+  }
 }
