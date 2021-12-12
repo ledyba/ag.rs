@@ -7,7 +7,7 @@ pub enum Tag {
   BitsPerSample,
   Compression,
   PhotometricInterpretation,
-  Unknown(u16)
+  Unknown(u16),
 }
 
 impl From<u16> for Tag {
