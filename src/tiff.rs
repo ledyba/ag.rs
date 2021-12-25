@@ -10,7 +10,7 @@ pub use data_type::*;
 
 #[derive(Clone, Debug)]
 pub enum Entry {
-  Unknown(Tag, DataType, u32, u32)
+  Unknown(Tag, TypeTag, u32, u32)
 }
 
 #[derive(Clone, Debug)]
