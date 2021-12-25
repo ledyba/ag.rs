@@ -1,7 +1,7 @@
 use std::io::{Read, Seek, SeekFrom};
 use byteordered::{Endian, Endianness};
 use byteordered::byteorder::ReadBytesExt;
-use super::data_type::{Rational, SRational};
+use super::data_type::{UnsignedRational, SignedRational};
 
 pub struct Stream {
   endian: Endianness,
@@ -120,34 +120,34 @@ impl Stream {
     Ok(buff)
   }
   /* rational */
-  pub fn read_rational(&mut self) -> std::io::Result<Rational> {
+  pub fn read_unsigned_rational(&mut self) -> std::io::Result<UnsignedRational> {
     let mut buff: [u32; 2] = [0, 0];
     self.endian.read_u32_into(&mut self.file, &mut buff)?;
-    Ok(Rational{
+    Ok(UnsignedRational {
       numerator: buff[0],
       denominator: buff[1],
     })
   }
-  pub fn read_rationals(&mut self, n: usize) -> std::io::Result<Vec<Rational>> {
+  pub fn read_unsigned_rationals(&mut self, n: usize) -> std::io::Result<Vec<UnsignedRational>> {
     let buff = self.read_u32s(n * 2)?;
-    let values: Vec<Rational> = buff.chunks(2).map(|v| Rational {
+    let values: Vec<UnsignedRational> = buff.chunks(2).map(|v| UnsignedRational {
       numerator: v[0],
       denominator: v[1],
     }).collect();
     Ok(values)
   }
   /* SRational */
-  pub fn read_srational(&mut self) -> std::io::Result<SRational> {
+  pub fn read_signed_rational(&mut self) -> std::io::Result<SignedRational> {
     let mut buff: [i32; 2] = [0, 0];
     self.endian.read_i32_into(&mut self.file, &mut buff)?;
-    Ok(SRational{
+    Ok(SignedRational {
       numerator: buff[0],
       denominator: buff[1],
     })
   }
-  pub fn read_srationals(&mut self, n: usize) -> std::io::Result<Vec<SRational>> {
+  pub fn read_signed_rationals(&mut self, n: usize) -> std::io::Result<Vec<SignedRational>> {
     let buff = self.read_i32s(n * 2)?;
-    let values: Vec<SRational> = buff.chunks(2).map(|v| SRational {
+    let values: Vec<SignedRational> = buff.chunks(2).map(|v| SignedRational {
       numerator: v[0],
       denominator: v[1],
     }).collect();

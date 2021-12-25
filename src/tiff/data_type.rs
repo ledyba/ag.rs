@@ -55,12 +55,12 @@ impl From<u16> for TypeTag {
   }
 }
 
-pub struct Rational {
+pub struct UnsignedRational {
   pub numerator: u32,
   pub denominator: u32,
 }
 
-pub struct SRational {
+pub struct SignedRational {
   pub numerator: i32,
   pub denominator: i32,
 }
