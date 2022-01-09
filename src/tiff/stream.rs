@@ -179,6 +179,7 @@ impl<'a> StreamState<'a> {
   }
   pub fn with_offset<'s, Fn, T>(&'s mut self, f: Fn) -> anyhow::Result<T>
     where
+    // https://doc.rust-lang.org/reference/trait-bounds.html#higher-ranked-trait-bounds
     for <'f> Fn: FnOnce(&'f mut Stream) -> anyhow::Result<T>,
   {
     let original_offset = self.stream.position()?;
