@@ -13,7 +13,7 @@ struct SeekTemp<'a> {
   original_offset: u64,
 }
 
-impl <'a> Drop for SeekTemp<'a> {
+impl<'a> Drop for SeekTemp<'a> {
   fn drop(&mut self) {
     self.stream.seek(self.original_offset).expect("Failed to seek");
   }
@@ -30,7 +30,7 @@ impl Stream {
       } else if header == [0x49, 0x49] {
         Endianness::Little
       } else {
-        return Err(anyhow::Error::msg("Not a TIFF file."))
+        return Err(anyhow::Error::msg("Not a TIFF file."));
       }
     };
     file.seek(SeekFrom::Start(0));
@@ -165,41 +165,66 @@ impl Stream {
   pub fn position(&mut self) -> std::io::Result<u64> {
     self.file.stream_position()
   }
-  pub fn with_offset<'a, Fn>(&'a mut self, f: Fn) -> anyhow::Result<Fn::Output>
-  where
-  Fn: FnOnce(&'a mut Self),
+}
+
+pub struct StreamState<'a> {
+  stream: &'a mut Stream,
+}
+
+impl<'a> StreamState<'a> {
+  pub fn new(stream: &'a mut Stream) -> Self {
+    Self {
+      stream,
+    }
+  }
+  pub fn with_offset<'s, Fn, T>(&'s mut self, f: Fn) -> anyhow::Result<T>
+    where
+    for <'f> Fn: FnOnce(&'f mut Stream) -> anyhow::Result<T>,
   {
-    let original_offset = self.file.stream_position()?;
-    let _ = SeekTemp {
-      stream: self,
-      original_offset,
-    };
-    Ok(f(self))
+    let original_offset = self.stream.position()?;
+    let r = f(&mut self.stream);
+    self.stream.seek(original_offset)?;
+    r
   }
 }
 
 #[cfg(test)]
 mod test {
+  use crate::tiff::StreamState;
   use super::Stream;
+
   #[test]
   fn test_read() {
     let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
     let result = stream.read_u8().expect("Failed to read");
     assert_eq!(result, 0x49);
   }
+
   #[test]
   fn test_read_u16() {
     let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
     let result = stream.read_u16().expect("Failed to read");
     assert_eq!(result, 0x4949);
   }
+
   #[test]
   fn test_read_u32() {
-    {
-      let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
-      stream.skip(4).expect("Failed to skip");
-      let result = stream.read_u32().expect("Failed to read");
-      assert_eq!(result, 0x08);
-    }
+    let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
+    stream.skip(4).expect("Failed to skip");
+    let result = stream.read_u32().expect("Failed to read");
+    assert_eq!(result, 0x08);
+  }
+
+  #[test]
+  fn test_seek() {
+    let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
+    stream.skip(4).expect("Failed to skip");
+    assert_eq!(stream.position().expect("Failed to get pos"), 4);
+    StreamState::new(&mut stream).with_offset(|stream| {
+      stream.seek(0x1000);
+      assert_eq!(stream.position().expect("Failed to get pos"), 0x1000);
+      Ok(())
+    });
+    assert_eq!(stream.position().expect("Failed to get pos"), 4);
   }
 }
