@@ -167,17 +167,17 @@ impl Stream {
   }
 }
 
-pub struct StreamState<'a> {
+pub struct Session<'a> {
   stream: &'a mut Stream,
 }
 
-impl<'a> StreamState<'a> {
+impl<'a> Session<'a> {
   pub fn new(stream: &'a mut Stream) -> Self {
     Self {
       stream,
     }
   }
-  pub fn with_offset<'s, Fn, T>(&'s mut self, f: Fn) -> anyhow::Result<T>
+  pub fn run<'s, Fn, T>(&'s mut self, f: Fn) -> anyhow::Result<T>
     where
     // https://doc.rust-lang.org/reference/trait-bounds.html#higher-ranked-trait-bounds
     for <'f> Fn: FnOnce(&'f mut Stream) -> anyhow::Result<T>,
@@ -191,7 +191,7 @@ impl<'a> StreamState<'a> {
 
 #[cfg(test)]
 mod test {
-  use crate::tiff::StreamState;
+  use crate::tiff::Session;
   use super::Stream;
 
   #[test]
@@ -217,11 +217,11 @@ mod test {
   }
 
   #[test]
-  fn test_stream_state() {
+  fn test_session_state() {
     let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
     stream.skip(4).expect("Failed to skip");
     assert_eq!(stream.position().expect("Failed to get pos"), 4);
-    StreamState::new(&mut stream).with_offset(|stream| {
+    Session::new(&mut stream).run(|stream| {
       stream.seek(0x1000);
       assert_eq!(stream.position().expect("Failed to get pos"), 0x1000);
       Ok(())
