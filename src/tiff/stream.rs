@@ -217,7 +217,7 @@ mod test {
   }
 
   #[test]
-  fn test_seek() {
+  fn test_stream_state() {
     let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
     stream.skip(4).expect("Failed to skip");
     assert_eq!(stream.position().expect("Failed to get pos"), 4);

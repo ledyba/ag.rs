@@ -46,6 +46,6 @@ fn main() -> anyhow::Result<()> {
     _ => {
     }
   }
-  eprint!("{}\n", m.usage());
+  eprintln!("{}", m.usage());
   return Err(anyhow::Error::msg(""));
 }
