@@ -71,6 +71,8 @@ impl Parser {
       let msg = format!("Type Mismatch: {:?} not in {:?}", data_type, types);
       Err(anyhow::Error::msg(msg))
     };
+    // See p.117
+    // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
     let e = match tag {
       254 => {
         NewSubFileType
