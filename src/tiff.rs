@@ -10,7 +10,11 @@ pub use data_type::*;
 
 #[derive(Clone, Debug)]
 pub enum Entry {
-  Unknown(Tag, TypeTag, u32, u32)
+  // See p.117
+  // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
+
+  // Unknown
+  Unknown(u16, DataType, u32, u32)
 }
 
 #[derive(Clone, Debug)]

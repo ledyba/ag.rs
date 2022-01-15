@@ -11,7 +11,7 @@ struct RawIFD {
 
 struct RawEntry {
   tag: u16,
-  data_type: TypeTag,
+  data_type: DataType,
   data_count: u32,
   data_or_offset: u32,
 }
@@ -39,37 +39,32 @@ impl Parser {
   }
 
   fn parse_image_file_directories(&mut self) -> anyhow::Result<Vec<ImageFileDirectory>> {
-    let mut raw:Vec<RawIFD> = Vec::new();
-    self.parse_ifd_raw(&mut raw);
-    unimplemented!();
+    let mut ifd:Vec<ImageFileDirectory> = Vec::new();
+    let mut pos = self.stream.position()?;
+    while pos != 0 {
+      self.stream.seek(pos)?;
+      let mut entries = Vec::<Entry>::new();
+      let num_entries = self.stream.read_u16()?;
+      for i in 0..num_entries {
+        entries.push(self.parse_entry()?);
+      }
+      ifd.push(ImageFileDirectory {
+        entries
+      });
+      pos = self.stream.read_u32()? as u64;
+    }
+    Ok(ifd)
   }
 
-  fn parse_ifd_raw(&mut self, directories: &mut Vec<RawIFD>) -> anyhow::Result<()> {
-    let num_entries = self.stream.read_u16()?;
-    let mut entries = Vec::<RawEntry>::new();
-    for i in 0..num_entries {
-      let tag = self.stream.read_u16()?;
-      let data_type = TypeTag::from(self.stream.read_u16()?);
-      let data_count = self.stream.read_u32()?;
-      let data_or_offset = self.stream.read_u32()?;
-      debug!("tag: {:?} type: {:?} count: {} val: {}", tag, data_type, data_count, data_or_offset);
-      entries.push(RawEntry{
-        tag,
-        data_type,
-        data_count,
-        data_or_offset,
-      });
+  fn parse_entry(&mut self) -> anyhow::Result<Entry> {
+    let tag = self.stream.read_u16()?;
+    let data_type = DataType::from(self.stream.read_u16()?);
+    let data_count = self.stream.read_u32()?;
+    let data_or_offset = self.stream.read_u32()?;
+    match tag {
+      _ => {
+        Ok(Entry::Unknown(tag, data_type, data_count, data_or_offset))
+      }
     }
-    directories.push(RawIFD {
-      entries,
-    });
-    let offset = self.stream.read_u32()?;
-    if offset != 0 {
-      debug!("Additional IFD at {}", offset);
-      self.stream.seek(offset as u64);
-      return self.parse_ifd_raw(directories);
-    }
-    debug!("All IFDs are parsed.");
-    Ok(())
   }
 }
