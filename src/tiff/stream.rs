@@ -8,17 +8,6 @@ pub struct Stream {
   file: std::fs::File,
 }
 
-struct SeekTemp<'a> {
-  stream: &'a mut Stream,
-  original_offset: u64,
-}
-
-impl<'a> Drop for SeekTemp<'a> {
-  fn drop(&mut self) {
-    self.stream.seek(self.original_offset).expect("Failed to seek");
-  }
-}
-
 impl Stream {
   pub fn open(path: &str) -> anyhow::Result<Stream> {
     let mut file = std::fs::File::open(path)?;
@@ -39,6 +28,7 @@ impl Stream {
       file,
     })
   }
+
   /* u8 */
   pub fn read_u8(&mut self) -> std::io::Result<u8> {
     self.file.read_u8()
@@ -49,6 +39,7 @@ impl Stream {
     self.file.read_exact(&mut buff)?;
     Ok(buff)
   }
+
   /* u8 */
   pub fn read_i8(&mut self) -> std::io::Result<i8> {
     self.file.read_i8()
@@ -59,6 +50,7 @@ impl Stream {
     self.file.read_i8_into(&mut buff)?;
     Ok(buff)
   }
+
   /* u16 */
   pub fn read_u16(&mut self) -> std::io::Result<u16> {
     self.endian.read_u16(&mut self.file)
@@ -69,6 +61,7 @@ impl Stream {
     self.endian.read_u16_into(&mut self.file, &mut buff)?;
     Ok(buff)
   }
+
   /* s16 */
   pub fn read_i16(&mut self) -> std::io::Result<i16> {
     self.endian.read_i16(&mut self.file)
@@ -79,6 +72,7 @@ impl Stream {
     self.endian.read_i16_into(&mut self.file, &mut buff)?;
     Ok(buff)
   }
+
   /* u32 */
   pub fn read_u32(&mut self) -> std::io::Result<u32> {
     self.endian.read_u32(&mut self.file)
@@ -89,6 +83,7 @@ impl Stream {
     self.endian.read_u32_into(&mut self.file, &mut buff)?;
     Ok(buff)
   }
+
   /* s32 */
   pub fn read_i32(&mut self) -> std::io::Result<i32> {
     self.endian.read_i32(&mut self.file)
@@ -99,6 +94,7 @@ impl Stream {
     self.endian.read_i32_into(&mut self.file, &mut buff)?;
     Ok(buff)
   }
+
   /* f32 */
   pub fn read_f32(&mut self) -> std::io::Result<f32> {
     self.endian.read_f32(&mut self.file)
@@ -109,6 +105,7 @@ impl Stream {
     self.endian.read_f32_into(&mut self.file, &mut buff)?;
     Ok(buff)
   }
+
   /* f64 */
   pub fn read_f64(&mut self) -> std::io::Result<f64> {
     self.endian.read_f64(&mut self.file)
@@ -119,6 +116,7 @@ impl Stream {
     self.endian.read_f64_into(&mut self.file, &mut buff)?;
     Ok(buff)
   }
+
   /* rational */
   pub fn read_unsigned_rational(&mut self) -> std::io::Result<UnsignedRational> {
     let mut buff: [u32; 2] = [0, 0];
@@ -128,6 +126,7 @@ impl Stream {
       denominator: buff[1],
     })
   }
+
   pub fn read_unsigned_rationals(&mut self, n: usize) -> std::io::Result<Vec<UnsignedRational>> {
     let buff = self.read_u32s(n * 2)?;
     let values: Vec<UnsignedRational> = buff.chunks(2).map(|v| UnsignedRational {
@@ -136,6 +135,7 @@ impl Stream {
     }).collect();
     Ok(values)
   }
+
   /* SRational */
   pub fn read_signed_rational(&mut self) -> std::io::Result<SignedRational> {
     let mut buff: [i32; 2] = [0, 0];
@@ -145,6 +145,7 @@ impl Stream {
       denominator: buff[1],
     })
   }
+
   pub fn read_signed_rationals(&mut self, n: usize) -> std::io::Result<Vec<SignedRational>> {
     let buff = self.read_i32s(n * 2)?;
     let values: Vec<SignedRational> = buff.chunks(2).map(|v| SignedRational {
@@ -153,15 +154,18 @@ impl Stream {
     }).collect();
     Ok(values)
   }
+
   /* Skip */
   pub fn skip(&mut self, bytes: i64) -> std::io::Result<()> {
     self.file.seek(SeekFrom::Current(bytes))?;
     Ok(())
   }
+
   pub fn seek(&mut self, offset: u64) -> std::io::Result<()> {
     self.file.seek(SeekFrom::Start(offset))?;
     Ok(())
   }
+
   pub fn position(&mut self) -> std::io::Result<u64> {
     self.file.stream_position()
   }
