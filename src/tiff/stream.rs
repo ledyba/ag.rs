@@ -126,7 +126,6 @@ impl Stream {
       denominator: buff[1],
     })
   }
-
   pub fn read_unsigned_rationals(&mut self, n: usize) -> std::io::Result<Vec<UnsignedRational>> {
     let buff = self.read_u32s(n * 2)?;
     let values: Vec<UnsignedRational> = buff.chunks(2).map(|v| UnsignedRational {
@@ -145,7 +144,6 @@ impl Stream {
       denominator: buff[1],
     })
   }
-
   pub fn read_signed_rationals(&mut self, n: usize) -> std::io::Result<Vec<SignedRational>> {
     let buff = self.read_i32s(n * 2)?;
     let values: Vec<SignedRational> = buff.chunks(2).map(|v| SignedRational {
