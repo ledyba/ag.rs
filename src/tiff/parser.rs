@@ -23,6 +23,7 @@ impl Parser {
       stream,
     })
   }
+
   pub fn parse(&mut self) -> anyhow::Result<Tiff> {
     let _ = self.stream.read_u16()?; // ignore header.
     let truth = self.stream.read_u16()?;
@@ -36,11 +37,13 @@ impl Parser {
       directories,
     })
   }
+
   fn parse_image_file_directories(&mut self) -> anyhow::Result<Vec<ImageFileDirectory>> {
     let mut raw:Vec<RawIFD> = Vec::new();
     self.parse_ifd_raw(&mut raw);
     unimplemented!();
   }
+
   fn parse_ifd_raw(&mut self, directories: &mut Vec<RawIFD>) -> anyhow::Result<()> {
     let num_entries = self.stream.read_u16()?;
     let mut entries = Vec::<RawEntry>::new();
