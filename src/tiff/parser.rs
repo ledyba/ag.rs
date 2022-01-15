@@ -61,7 +61,6 @@ impl Parser {
     let data_type = DataType::from(self.stream.read_u16()?);
     let data_count = self.stream.read_u32()?;
     let data_or_offset = self.stream.read_u32()?;
-    use Entry::*;
     let check = |types: &[DataType]| -> anyhow::Result<()> {
       for ty in types {
         if *ty == data_type {
@@ -75,33 +74,35 @@ impl Parser {
     // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
     let e = match tag {
       254 => {
-        NewSubFileType
+        check(&[DataType::U32]);
+        Entry::NewSubFileType
       },
       255 => {
-        SubFileType
+        check(&[DataType::U16]);
+        Entry::SubFileType
       },
       256 => {
         check(&[DataType::U16, DataType::U32]);
-        ImageWidth(data_or_offset)
+        Entry::ImageWidth(data_or_offset)
       },
       257 => {
         check(&[DataType::U16, DataType::U32]);
-        ImageLength(data_or_offset)
+        Entry::ImageLength(data_or_offset)
       },
       258 => {
-        BitsPerSample
+        Entry::BitsPerSample
       },
       259 => {
-        Compression
+        Entry::Compression
       },
       262 => {
-        PhotometricInterpretation
+        Entry::PhotometricInterpretation
       },
       263 => {
-        Thresholding
+        Entry::Thresholding
       },
       _ => {
-        Unknown(tag, data_type, data_count, data_or_offset)
+        Entry::Unknown(tag, data_type, data_count, data_or_offset)
       }
     };
     Ok(e)
