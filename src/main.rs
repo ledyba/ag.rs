@@ -1,11 +1,12 @@
 use clap::{Arg, SubCommand};
-use log::LevelFilter;
+use log::{info, LevelFilter};
 
 mod tiff;
 
 fn load(path: &str) -> anyhow::Result<()> {
   let mut parser = tiff::Parser::open(path)?;
-  let _tiff = parser.parse()?;
+  let tiff = parser.parse()?;
+  info!("{:?}", &tiff);
   Ok(())
 }
 

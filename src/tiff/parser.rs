@@ -61,10 +61,47 @@ impl Parser {
     let data_type = DataType::from(self.stream.read_u16()?);
     let data_count = self.stream.read_u32()?;
     let data_or_offset = self.stream.read_u32()?;
-    match tag {
-      _ => {
-        Ok(Entry::Unknown(tag, data_type, data_count, data_or_offset))
+    use Entry::*;
+    let check = |types: &[DataType]| -> anyhow::Result<()> {
+      for ty in types {
+        if *ty == data_type {
+          return Ok(());
+        }
       }
-    }
+      let msg = format!("Type Mismatch: {:?} not in {:?}", data_type, types);
+      Err(anyhow::Error::msg(msg))
+    };
+    let e = match tag {
+      254 => {
+        NewSubFileType
+      },
+      255 => {
+        SubFileType
+      },
+      256 => {
+        check(&[DataType::U16, DataType::U32]);
+        ImageWidth(data_or_offset)
+      },
+      257 => {
+        check(&[DataType::U16, DataType::U32]);
+        ImageLength(data_or_offset)
+      },
+      258 => {
+        BitsPerSample
+      },
+      259 => {
+        Compression
+      },
+      262 => {
+        PhotometricInterpretation
+      },
+      263 => {
+        Thresholding
+      },
+      _ => {
+        Unknown(tag, data_type, data_count, data_or_offset)
+      }
+    };
+    Ok(e)
   }
 }

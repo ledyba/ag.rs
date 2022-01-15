@@ -1,18 +1,23 @@
 pub mod stream;
 pub mod parser;
-pub mod tag;
 pub mod data_type;
 
 pub use stream::*;
 pub use parser::*;
-pub use tag::*;
 pub use data_type::*;
 
 #[derive(Clone, Debug)]
 pub enum Entry {
   // See p.117
   // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
-
+  NewSubFileType,
+  SubFileType,
+  ImageWidth(u32),
+  ImageLength(u32),
+  BitsPerSample,
+  Compression,
+  PhotometricInterpretation,
+  Thresholding,
   // Unknown
   Unknown(u16, DataType, u32, u32)
 }
