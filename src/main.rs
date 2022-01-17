@@ -28,14 +28,15 @@ fn main() -> anyhow::Result<()> {
   }
   log_builder.init();
 
-  match m.subcommand_name() {
-    Some("load") => {
-      let m = m.subcommand_matches("load").unwrap();
-      if let Some(path) = m.value_of("filename.arw") {
-        return app::load(path);
+  if let Some(command_name) = m.subcommand_name() {
+    match command_name {
+      "load" => {
+        let m = m.subcommand_matches("load").unwrap();
+        if let Some(path) = m.value_of("filename.arw") {
+          return app::load(path);
+        }
       }
-    }
-    _ => {
+      _ => {}
     }
   }
   // Nothing to do!
