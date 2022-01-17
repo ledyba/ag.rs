@@ -31,11 +31,8 @@ fn main() -> anyhow::Result<()> {
   match m.subcommand_name() {
     Some("load") => {
       let m = m.subcommand_matches("load").unwrap();
-      match m.value_of("filename.arw") {
-        Some(path) => {
-          return app::load(path);
-        }
-        _ => {}
+      if let Some(path) = m.value_of("filename.arw") {
+        return app::load(path);
       }
     }
     _ => {
