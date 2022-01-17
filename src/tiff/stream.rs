@@ -136,15 +136,18 @@ impl Stream {
   }
 
   /* SRational */
-  pub fn read_signed_rational(&mut self) -> std::io::Result<SignedRational> {
-    let mut buff: [i32; 2] = [0, 0];
-    self.endian.read_i32_into(&mut self.file, &mut buff)?;
-    Ok(SignedRational {
-      numerator: buff[0],
-      denominator: buff[1],
+  pub fn read_signed_rational(&mut self, offset: u64) -> anyhow::Result<SignedRational> {
+    self.fork(|s| {
+      s.seek(offset)?;
+      let mut buff: [i32; 2] = [0, 0];
+      s.endian.read_i32_into(&mut s.file, &mut buff)?;
+      Ok(SignedRational {
+        numerator: buff[0],
+        denominator: buff[1],
+      })
     })
   }
-  pub fn read_signed_rationals(&mut self, n: usize) -> std::io::Result<Vec<SignedRational>> {
+  pub fn read_signed_rationals(&mut self, offset: u64, n: usize) -> std::io::Result<Vec<SignedRational>> {
     let buff = self.read_i32s(n * 2)?;
     let values: Vec<SignedRational> = buff.chunks(2).map(|v| SignedRational {
       numerator: v[0],
@@ -167,33 +170,21 @@ impl Stream {
   pub fn position(&mut self) -> std::io::Result<u64> {
     self.file.stream_position()
   }
-}
 
-pub struct Fork<'a> {
-  stream: &'a mut Stream,
-}
-
-impl<'a> Fork<'a> {
-  pub fn new(stream: &'a mut Stream) -> Self {
-    Self {
-      stream,
-    }
-  }
-  pub fn run<'s, Fn, T>(&'s mut self, f: Fn) -> anyhow::Result<T>
+  pub fn fork<'s, Fn, T>(&'s mut self, f: Fn) -> anyhow::Result<T>
     where
     // https://doc.rust-lang.org/reference/trait-bounds.html#higher-ranked-trait-bounds
-    for <'f> Fn: FnOnce(&'f mut Stream) -> anyhow::Result<T>,
+    for <'f> Fn: FnOnce(&'f mut Self) -> anyhow::Result<T>,
   {
-    let original_offset = self.stream.position()?;
-    let r = f(&mut self.stream);
-    self.stream.seek(original_offset)?;
+    let original_offset = self.position()?;
+    let r = f(self);
+    self.seek(original_offset)?;
     r
   }
 }
 
 #[cfg(test)]
 mod test {
-  use crate::tiff::Fork;
   use super::Stream;
 
   #[test]
@@ -223,7 +214,7 @@ mod test {
     let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
     stream.skip(4).expect("Failed to skip");
     assert_eq!(stream.position().expect("Failed to get pos"), 4);
-    Fork::new(&mut stream).run(|stream| {
+    stream.fork(|stream| {
       stream.seek(0x1000)?;
       assert_eq!(stream.position().expect("Failed to get pos"), 0x1000);
       Ok(())
