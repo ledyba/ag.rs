@@ -60,7 +60,7 @@ impl Parser {
     };
     // See p.117
     // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
-    let e = match tag {
+    let entry = match tag {
       254 => {
         check(&[DataType::U32])?;
         Entry::NewSubFileType
@@ -94,6 +94,6 @@ impl Parser {
         Entry::Unknown(tag, data_type, data_count, data_or_offset)
       }
     };
-    Ok(e)
+    Ok(entry)
   }
 }
