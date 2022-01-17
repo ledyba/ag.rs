@@ -1,7 +1,7 @@
 use clap::{Arg, SubCommand};
 use log::{info, LevelFilter};
 
-mod agpp;
+mod app;
 mod tiff;
 
 fn main() -> anyhow::Result<()> {
