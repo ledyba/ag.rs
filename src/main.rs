@@ -48,5 +48,5 @@ fn main() -> anyhow::Result<()> {
     }
   }
   eprintln!("{}", m.usage());
-  return Err(anyhow::Error::msg(""));
+  return Err(anyhow::Error::msg("Please specify a subcommand to do."));
 }
