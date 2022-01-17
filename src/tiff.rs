@@ -7,6 +7,13 @@ pub use parser::*;
 pub use data_type::*;
 
 #[derive(Clone, Debug)]
+pub enum SubFileType {
+  FullResolution = 1,
+  ReducedResolution = 2,
+  SinglePageOfMultiPage = 3,
+}
+
+#[derive(Clone, Debug)]
 pub enum Entry {
   // See p.117
   // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf

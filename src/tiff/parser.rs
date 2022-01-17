@@ -1,19 +1,7 @@
-use log::{debug, info};
 use super::*;
 
 pub struct Parser {
   stream: Stream,
-}
-
-struct RawIFD {
-  entries: Vec<RawEntry>
-}
-
-struct RawEntry {
-  tag: u16,
-  data_type: DataType,
-  data_count: u32,
-  data_or_offset: u32,
 }
 
 impl Parser {
@@ -31,7 +19,7 @@ impl Parser {
       return Err(anyhow::Error::msg("Not a TIFF file."));
     }
     let offset = self.stream.read_u32()?;
-    self.stream.seek(offset as u64);
+    self.stream.seek(offset as u64)?;
     let directories = self.parse_image_file_directories()?;
     Ok(Tiff{
       directories,
@@ -45,7 +33,7 @@ impl Parser {
       self.stream.seek(pos)?;
       let mut entries = Vec::<Entry>::new();
       let num_entries = self.stream.read_u16()?;
-      for i in 0..num_entries {
+      for _ in 0..num_entries {
         entries.push(self.parse_entry()?);
       }
       ifd.push(ImageFileDirectory {
@@ -74,19 +62,20 @@ impl Parser {
     // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
     let e = match tag {
       254 => {
-        check(&[DataType::U32]);
+        check(&[DataType::U32])?;
         Entry::NewSubFileType
       },
       255 => {
-        check(&[DataType::U16]);
+        // p.40
+        check(&[DataType::U16])?;
         Entry::SubFileType
       },
       256 => {
-        check(&[DataType::U16, DataType::U32]);
+        check(&[DataType::U16, DataType::U32])?;
         Entry::ImageWidth(data_or_offset)
       },
       257 => {
-        check(&[DataType::U16, DataType::U32]);
+        check(&[DataType::U16, DataType::U32])?;
         Entry::ImageLength(data_or_offset)
       },
       258 => {
