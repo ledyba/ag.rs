@@ -22,7 +22,7 @@ impl Stream {
         return Err(anyhow::Error::msg("Not a TIFF file."));
       }
     };
-    file.seek(SeekFrom::Start(0));
+    file.seek(SeekFrom::Start(0))?;
     Ok(Self {
       endian,
       file,
@@ -169,11 +169,11 @@ impl Stream {
   }
 }
 
-pub struct Session<'a> {
+pub struct Fork<'a> {
   stream: &'a mut Stream,
 }
 
-impl<'a> Session<'a> {
+impl<'a> Fork<'a> {
   pub fn new(stream: &'a mut Stream) -> Self {
     Self {
       stream,
@@ -193,7 +193,7 @@ impl<'a> Session<'a> {
 
 #[cfg(test)]
 mod test {
-  use crate::tiff::Session;
+  use crate::tiff::Fork;
   use super::Stream;
 
   #[test]
@@ -219,15 +219,15 @@ mod test {
   }
 
   #[test]
-  fn test_session_state() {
+  fn test_fork() {
     let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
     stream.skip(4).expect("Failed to skip");
     assert_eq!(stream.position().expect("Failed to get pos"), 4);
-    Session::new(&mut stream).run(|stream| {
-      stream.seek(0x1000);
+    Fork::new(&mut stream).run(|stream| {
+      stream.seek(0x1000)?;
       assert_eq!(stream.position().expect("Failed to get pos"), 0x1000);
       Ok(())
-    });
+    }).expect("Failed to run test");
     assert_eq!(stream.position().expect("Failed to get pos"), 4);
   }
 }
