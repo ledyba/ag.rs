@@ -1,14 +1,8 @@
 use clap::{Arg, SubCommand};
 use log::{info, LevelFilter};
 
+mod agpp;
 mod tiff;
-
-fn load(path: &str) -> anyhow::Result<()> {
-  let mut parser = tiff::Parser::open(path)?;
-  let tiff = parser.parse()?;
-  info!("{:?}", &tiff);
-  Ok(())
-}
 
 fn main() -> anyhow::Result<()> {
   let mut log_builder = env_logger::Builder::from_default_env();
@@ -39,7 +33,7 @@ fn main() -> anyhow::Result<()> {
       let m = m.subcommand_matches("load").unwrap();
       match m.value_of("filename.arw") {
         Some(path) => {
-          return load(path);
+          return app::load(path);
         }
         _ => {}
       }
