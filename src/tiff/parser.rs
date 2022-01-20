@@ -51,7 +51,7 @@ impl Parser {
     let data_count = self.stream.read_u32()?;
     let data_of_offset_position = self.stream.position()?;
     let data_or_offset = self.stream.read_u32()?;
-    let check = |types: &[DataType]| -> anyhow::Result<()> {
+    let check_type = |types: &[DataType]| -> anyhow::Result<()> {
       for ty in types {
         if *ty == data_type {
           return Ok(());
@@ -71,19 +71,19 @@ impl Parser {
     let entry = match tag {
       254 => {
         // p.20
-        check(&[DataType::U32])?;
+        check_type(&[DataType::U32])?;
         Entry::NewSubFileType {
           is_thumbnail: (data_or_offset & 1) == 1,
         }
       },
       256 => {
         // p.20
-        check(&[DataType::U16, DataType::U32])?;
+        check_type(&[DataType::U16, DataType::U32])?;
         Entry::ImageWidth(data_or_offset)
       },
       257 => {
         // p.20
-        check(&[DataType::U16, DataType::U32])?;
+        check_type(&[DataType::U16, DataType::U32])?;
         Entry::ImageLength(data_or_offset)
       },
       258 => {
@@ -92,7 +92,7 @@ impl Parser {
       },
       259 => {
         // p.30
-        check(&[DataType::U16])?;
+        check_type(&[DataType::U16])?;
         match data_or_offset {
           1 => Entry::Compression(Compression::NoCompression),
           7 => Entry::Compression(Compression::Jpeg),
@@ -104,24 +104,24 @@ impl Parser {
         Entry::PhotometricInterpretation
       },
       270 => {
-        check(&[DataType::Ascii])?;
+        check_type(&[DataType::Ascii])?;
         let description = read_ascii()?;
         Entry::ImageDescription(description)
       }
       271 => {
-        check(&[DataType::Ascii])?;
+        check_type(&[DataType::Ascii])?;
         Entry::Make(read_ascii()?)
       }
       272 => {
-        check(&[DataType::Ascii])?;
+        check_type(&[DataType::Ascii])?;
         Entry::Model(read_ascii()?)
       }
       305 => {
-        check(&[DataType::Ascii])?;
+        check_type(&[DataType::Ascii])?;
         Entry::Software(read_ascii()?)
       }
       306 => {
-        check(&[DataType::Ascii])?;
+        check_type(&[DataType::Ascii])?;
         Entry::DateTime(read_ascii()?)
       }
       _ => {
