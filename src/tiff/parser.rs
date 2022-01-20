@@ -62,19 +62,33 @@ impl Parser {
     // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
     let entry = match tag {
       254 => {
+        // p.36
         check(&[DataType::U32])?;
-        Entry::NewSubFileType
+        Entry::NewSubFileType {
+          is_reduced: (data_or_offset & 1) == 1,
+          is_single_page_of_multi_page: (data_or_offset & 2) == 2,
+          is_transparency_mask_for_another: (data_or_offset & 4) == 4,
+        }
       },
       255 => {
         // p.40
         check(&[DataType::U16])?;
-        Entry::SubFileType
+        match data_or_offset {
+          1 => Entry::SubFileType(SubFileType::FullResolution),
+          2 => Entry::SubFileType(SubFileType::ReducedResolution),
+          3 => Entry::SubFileType(SubFileType::SinglePageOfMultiPage),
+          _ => {
+            return Err(anyhow::Error::msg("Invalid SubFileType"))
+          }
+        }
       },
       256 => {
+        // p.18
         check(&[DataType::U16, DataType::U32])?;
         Entry::ImageWidth(data_or_offset)
       },
       257 => {
+        // p.18
         check(&[DataType::U16, DataType::U32])?;
         Entry::ImageLength(data_or_offset)
       },

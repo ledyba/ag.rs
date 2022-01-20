@@ -17,8 +17,12 @@ pub enum SubFileType {
 pub enum Entry {
   // See p.117
   // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
-  NewSubFileType,
-  SubFileType,
+  NewSubFileType {
+    is_reduced: bool,
+    is_single_page_of_multi_page: bool,
+    is_transparency_mask_for_another: bool,
+  },
+  SubFileType(SubFileType),
   ImageWidth(u32),
   ImageLength(u32),
   BitsPerSample,
