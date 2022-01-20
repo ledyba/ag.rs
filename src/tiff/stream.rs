@@ -136,24 +136,28 @@ impl Stream {
   }
 
   /* SRational */
-  pub fn read_signed_rational(&mut self, offset: u64) -> anyhow::Result<SignedRational> {
-    self.fork(|s| {
-      s.seek(offset)?;
-      let mut buff: [i32; 2] = [0, 0];
-      s.endian.read_i32_into(&mut s.file, &mut buff)?;
-      Ok(SignedRational {
-        numerator: buff[0],
-        denominator: buff[1],
-      })
+  pub fn read_signed_rational(&mut self) -> anyhow::Result<SignedRational> {
+    let mut buff: [i32; 2] = [0, 0];
+    s.endian.read_i32_into(&mut s.file, &mut buff)?;
+    Ok(SignedRational {
+      numerator: buff[0],
+      denominator: buff[1],
     })
   }
-  pub fn read_signed_rationals(&mut self, offset: u64, n: usize) -> std::io::Result<Vec<SignedRational>> {
-    let buff = self.read_i32s(n * 2)?;
-    let values: Vec<SignedRational> = buff.chunks(2).map(|v| SignedRational {
-      numerator: v[0],
-      denominator: v[1],
-    }).collect();
-    Ok(values)
+  pub fn fetch_signed_rational(&mut self, offset: u64) -> anyhow::Result<SignedRational> {
+    self.warp(offset, |s| {
+      s.read_signed_rational()
+    })
+  }
+  pub fn fetch_signed_rationals(&mut self, offset: u64, n: usize) -> anyhow::Result<Vec<SignedRational>> {
+    self.warp(offset, |s| {
+      let buff = s.read_i32s(n * 2)?;
+      let values: Vec<SignedRational> = buff.chunks_exact(2).map(|v| SignedRational {
+        numerator: v[0],
+        denominator: v[1],
+      }).collect();
+      Ok(values)
+    })
   }
 
   /* Skip */
@@ -169,6 +173,16 @@ impl Stream {
 
   pub fn position(&mut self) -> std::io::Result<u64> {
     self.file.stream_position()
+  }
+
+  pub fn warp<'s, Fn, T>(&'s mut self, offset: u64, f: Fn) -> anyhow::Result<T>
+    where
+    for<'f> Fn: FnOnce(&'f mut Self) -> anyhow::Result<T>,
+  {
+    self.fork(|stream| {
+      stream.seek(offset)?;
+      f(stream)
+    })
   }
 
   pub fn fork<'s, Fn, T>(&'s mut self, f: Fn) -> anyhow::Result<T>
