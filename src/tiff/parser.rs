@@ -1,3 +1,4 @@
+use log::warn;
 use super::*;
 
 pub struct Parser {
@@ -48,6 +49,7 @@ impl Parser {
     let tag = self.stream.read_u16()?;
     let data_type = DataType::from(self.stream.read_u16()?);
     let data_count = self.stream.read_u32()?;
+    let data_of_offset_position = self.stream.position()?;
     let data_or_offset = self.stream.read_u32()?;
     let check = |types: &[DataType]| -> anyhow::Result<()> {
       for ty in types {
@@ -58,53 +60,72 @@ impl Parser {
       let msg = format!("Type Mismatch: {:?} not in {:?}", data_type, types);
       Err(anyhow::Error::msg(msg))
     };
-    // See p.117
-    // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
+    let mut read_ascii = || {
+      if data_count > 4 {
+        self.stream.fetch_ascii(data_or_offset as u64, data_count as usize)
+      } else {
+        self.stream.fetch_ascii(data_of_offset_position, data_count as usize)
+      }
+    };
+    // See: p.17
     let entry = match tag {
       254 => {
-        // p.36
+        // p.20
         check(&[DataType::U32])?;
         Entry::NewSubFileType {
-          is_reduced: (data_or_offset & 1) == 1,
-          is_single_page_of_multi_page: (data_or_offset & 2) == 2,
-          is_transparency_mask_for_another: (data_or_offset & 4) == 4,
-        }
-      },
-      255 => {
-        // p.40
-        check(&[DataType::U16])?;
-        match data_or_offset {
-          1 => Entry::SubFileType(SubFileType::FullResolution),
-          2 => Entry::SubFileType(SubFileType::ReducedResolution),
-          3 => Entry::SubFileType(SubFileType::SinglePageOfMultiPage),
-          _ => {
-            return Err(anyhow::Error::msg("Invalid SubFileType"))
-          }
+          is_thumbnail: (data_or_offset & 1) == 1,
         }
       },
       256 => {
-        // p.18
+        // p.20
         check(&[DataType::U16, DataType::U32])?;
         Entry::ImageWidth(data_or_offset)
       },
       257 => {
-        // p.18
+        // p.20
         check(&[DataType::U16, DataType::U32])?;
         Entry::ImageLength(data_or_offset)
       },
       258 => {
+        // TODO
         Entry::BitsPerSample
       },
       259 => {
-        Entry::Compression
+        // p.30
+        check(&[DataType::U16])?;
+        match data_or_offset {
+          1 => Entry::Compression(Compression::NoCompression),
+          7 => Entry::Compression(Compression::Jpeg),
+          _ => Entry::Compression(Compression::Unknown(data_or_offset as u16)),
+        }
       },
       262 => {
+        // TODO
         Entry::PhotometricInterpretation
       },
-      263 => {
-        Entry::Thresholding
-      },
+      270 => {
+        check(&[DataType::Ascii])?;
+        let description = read_ascii()?;
+        Entry::ImageDescription(description)
+      }
+      271 => {
+        check(&[DataType::Ascii])?;
+        Entry::Make(read_ascii()?)
+      }
+      272 => {
+        check(&[DataType::Ascii])?;
+        Entry::Model(read_ascii()?)
+      }
+      305 => {
+        check(&[DataType::Ascii])?;
+        Entry::Software(read_ascii()?)
+      }
+      306 => {
+        check(&[DataType::Ascii])?;
+        Entry::DateTime(read_ascii()?)
+      }
       _ => {
+        warn!("Unknown Tag: {}", tag);
         Entry::Unknown(tag, data_type, data_count, data_or_offset)
       }
     };

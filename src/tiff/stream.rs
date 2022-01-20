@@ -46,6 +46,15 @@ impl Stream {
     self.warp(offset, |s| s.read_vec_u8(n))
   }
 
+  /* ASCII */
+  pub fn read_ascii(&mut self, n: usize) -> std::io::Result<String> {
+    let buff = self.read_vec_u8(n - 1)?;
+    Ok(String::from_utf8_lossy(&buff).to_string())
+  }
+  pub fn fetch_ascii(&mut self, offset: u64, n: usize) -> std::io::Result<String> {
+    self.warp(offset, |s| s.read_ascii(n))
+  }
+
   /* i8 */
   pub fn read_i8(&mut self) -> std::io::Result<i8> {
     self.file.read_i8()
