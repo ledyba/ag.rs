@@ -64,7 +64,7 @@ impl Tiff {
   }
   fn inspect_dir(&self, i: i32, dir: &ImageFileDirectory, indent: usize) {
     info!("{:indent$}<<ImageFileDirectory {}>>", " ", i);
-    for (_, ent) in (0..).zip(dir.entries.iter()) {
+    for ent in dir.entries.iter() {
       info!("{:indent$}- {:?}", " ", ent, indent = indent + 2);
     }
   }
