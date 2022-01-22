@@ -65,7 +65,7 @@ pub struct UnsignedRational {
 
 impl Debug for UnsignedRational {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}/{}", self.numerator, self.denominator)
+    write!(f, "UnsignedRational({}/{})", self.numerator, self.denominator)
   }
 }
 
@@ -77,6 +77,6 @@ pub struct SignedRational {
 
 impl Debug for SignedRational {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}/{}", self.numerator, self.denominator)
+    write!(f, "SignedRational({}/{})", self.numerator, self.denominator)
   }
 }
