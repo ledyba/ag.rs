@@ -2,6 +2,7 @@ pub mod stream;
 pub mod parser;
 pub mod data_type;
 
+use log::info;
 pub use stream::*;
 pub use parser::*;
 pub use data_type::*;
@@ -42,4 +43,19 @@ pub struct ImageFileDirectory {
 #[derive(Clone, Debug)]
 pub struct Tiff {
   directories: Vec<ImageFileDirectory>,
+}
+
+impl Tiff {
+  pub fn inspect(&self) {
+    info!("** Tiff **");
+    for (i, dir) in (0..).zip(self.directories.iter()) {
+      self.inspect_dir(i, dir, 0);
+    }
+  }
+  fn inspect_dir(&self, i: i32, dir: &ImageFileDirectory, indent: usize) {
+    info!("{:indent$}<<ImageFileDirectory {}>>", " ", i, indent = indent);
+    for (_, ent) in (0..).zip(dir.entries.iter()) {
+      info!("{:indent$}- {:?}", " ", ent, indent = indent + 2);
+    }
+  }
 }
