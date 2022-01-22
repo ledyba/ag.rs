@@ -122,6 +122,16 @@ impl Parser {
         check_type(&[DataType::Ascii])?;
         Entry::Model(read_ascii()?)
       }
+      274 => {
+        check_type(&[DataType::U16])?;
+        match data_count {
+          1 => Entry::Orientation(Orientation::Rotate0),
+          3 => Entry::Orientation(Orientation::Rotate180),
+          6 => Entry::Orientation(Orientation::Rotate270),
+          8 => Entry::Orientation(Orientation::Rotate90),
+          _ => Entry::Orientation(Orientation::Unknown),
+        }
+      }
       305 => {
         check_type(&[DataType::Ascii])?;
         Entry::Software(read_ascii()?)

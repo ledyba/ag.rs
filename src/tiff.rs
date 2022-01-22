@@ -15,6 +15,15 @@ pub enum Compression {
 }
 
 #[derive(Clone, Debug)]
+pub enum Orientation { // Counter-clockwise
+  Rotate0,
+  Rotate180,
+  Rotate270,
+  Rotate90,
+  Unknown,
+}
+
+#[derive(Clone, Debug)]
 pub enum Entry {
   // See p.117
   // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
@@ -29,6 +38,7 @@ pub enum Entry {
   ImageDescription(String),
   Make(String),
   Model(String),
+  Orientation(Orientation),
   Software(String),
   DateTime(String),
   // Unknown
