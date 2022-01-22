@@ -49,7 +49,7 @@ impl Parser {
     let tag = self.stream.read_u16()?;
     let data_type = DataType::from(self.stream.read_u16()?);
     let data_count = self.stream.read_u32()?;
-    let data_of_offset_position = self.stream.position()?;
+    let data_or_offset_position = self.stream.position()?;
     let data_or_offset = self.stream.read_u32()?;
     /* ************************************************************************
      * util functions
@@ -67,7 +67,7 @@ impl Parser {
       if data_count > 4 {
         self.stream.fetch_ascii(data_or_offset as u64, data_count as usize)
       } else {
-        self.stream.fetch_ascii(data_of_offset_position, data_count as usize)
+        self.stream.fetch_ascii(data_or_offset_position, data_count as usize)
       }
     };
     /* ************************************************************************
@@ -131,6 +131,14 @@ impl Parser {
           8 => Entry::Orientation(Orientation::Rotate90),
           _ => Entry::Orientation(Orientation::Unknown),
         }
+      }
+      282 => {
+        check_type(&[DataType::Rational])?;
+        Entry::XResolution(self.stream.fetch_unsigned_rational(data_or_offset as u64)?)
+      }
+      283 => {
+        check_type(&[DataType::Rational])?;
+        Entry::YResolution(self.stream.fetch_unsigned_rational(data_or_offset as u64)?)
       }
       305 => {
         check_type(&[DataType::Ascii])?;

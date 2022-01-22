@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Formatter, Pointer};
+
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Debug)]
 pub enum DataType {
   U8,
@@ -55,12 +57,26 @@ impl From<u16> for DataType {
   }
 }
 
+#[derive(Clone)]
 pub struct UnsignedRational {
   pub numerator: u32,
   pub denominator: u32,
 }
 
+impl Debug for UnsignedRational {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    write!(f, "{}/{}", self.numerator, self.denominator)
+  }
+}
+
+#[derive(Clone)]
 pub struct SignedRational {
   pub numerator: i32,
   pub denominator: i32,
+}
+
+impl Debug for SignedRational {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    write!(f, "{}/{}", self.numerator, self.denominator)
+  }
 }

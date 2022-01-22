@@ -39,6 +39,8 @@ pub enum Entry {
   Make(String),
   Model(String),
   Orientation(Orientation),
+  XResolution(UnsignedRational),
+  YResolution(UnsignedRational),
   Software(String),
   DateTime(String),
   // Unknown
