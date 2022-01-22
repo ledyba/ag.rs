@@ -49,8 +49,10 @@ impl Parser {
     let tag = self.stream.read_u16()?;
     let data_type = DataType::from(self.stream.read_u16()?);
     let data_count = self.stream.read_u32()?;
-    let data_or_offset_position = self.stream.position()?;
-    let data_or_offset = self.stream.read_u32()?;
+    // data or offset
+    let data_offset = self.stream.position()?;
+    let data = self.stream.read_u32()?;
+    let offset = data as u64;
     /* ************************************************************************
      * util functions
      *************************************************************************/
@@ -65,9 +67,9 @@ impl Parser {
     };
     let mut read_ascii = || {
       if data_count > 4 {
-        self.stream.fetch_ascii(data_or_offset as u64, data_count as usize)
+        self.stream.fetch_ascii(offset, data_count as usize)
       } else {
-        self.stream.fetch_ascii(data_or_offset_position, data_count as usize)
+        self.stream.fetch_ascii(data_offset, data_count as usize)
       }
     };
     /* ************************************************************************
@@ -79,18 +81,18 @@ impl Parser {
         // p.20
         check_type(&[DataType::U32])?;
         Entry::NewSubFileType {
-          is_thumbnail: (data_or_offset & 1) == 1,
+          is_thumbnail: (data & 1) == 1,
         }
       },
       256 => {
         // p.20
         check_type(&[DataType::U16, DataType::U32])?;
-        Entry::ImageWidth(data_or_offset)
+        Entry::ImageWidth(data)
       },
       257 => {
         // p.20
         check_type(&[DataType::U16, DataType::U32])?;
-        Entry::ImageLength(data_or_offset)
+        Entry::ImageLength(data)
       },
       258 => {
         // TODO
@@ -99,10 +101,10 @@ impl Parser {
       259 => {
         // p.30
         check_type(&[DataType::U16])?;
-        match data_or_offset {
+        match data {
           1 => Entry::Compression(Compression::NoCompression),
           7 => Entry::Compression(Compression::Jpeg),
-          _ => Entry::Compression(Compression::Unknown(data_or_offset as u16)),
+          _ => Entry::Compression(Compression::Unknown(data as u16)),
         }
       },
       262 => {
@@ -134,11 +136,11 @@ impl Parser {
       }
       282 => {
         check_type(&[DataType::Rational])?;
-        Entry::XResolution(self.stream.fetch_unsigned_rational(data_or_offset as u64)?)
+        Entry::XResolution(self.stream.fetch_unsigned_rational(offset)?)
       }
       283 => {
         check_type(&[DataType::Rational])?;
-        Entry::YResolution(self.stream.fetch_unsigned_rational(data_or_offset as u64)?)
+        Entry::YResolution(self.stream.fetch_unsigned_rational(offset)?)
       }
       305 => {
         check_type(&[DataType::Ascii])?;
@@ -150,7 +152,7 @@ impl Parser {
       }
       _ => {
         warn!("Unknown Tag: {}", tag);
-        Entry::Unknown(tag, data_type, data_count, data_or_offset)
+        Entry::Unknown(tag, data_type, data_count, data)
       }
     };
     Ok(entry)
