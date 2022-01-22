@@ -12,7 +12,8 @@
         "args": [
           "build",
           "--bin=ag",
-          "--package=ag"
+          "--package=ag",
+          "--", "-v", "load", "sample/sample.arw"
         ],
         "filter": {
           "name": "ag",
@@ -25,16 +26,16 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug unit tests in executable 'min-regex'",
+      "name": "Debug unit tests in executable 'ag'",
       "cargo": {
         "args": [
           "test",
           "--no-run",
-          "--bin=min-regex",
-          "--package=min-regex"
+          "--bin=ag",
+          "--package=ag"
         ],
         "filter": {
-          "name": "min-regex",
+          "name": "ag",
           "kind": "bin"
         }
       },
