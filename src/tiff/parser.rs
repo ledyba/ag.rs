@@ -134,7 +134,7 @@ impl Parser {
         warn!("Unknown Tag: {}", tag);
         Entry::Unknown(tag, data_type, data_count, data_or_offset)
       }
-    };g
+    };
     Ok(entry)
   }
 }
