@@ -51,6 +51,9 @@ impl Parser {
     let data_count = self.stream.read_u32()?;
     let data_of_offset_position = self.stream.position()?;
     let data_or_offset = self.stream.read_u32()?;
+    /* ************************************************************************
+     * util functions
+     *************************************************************************/
     let check_type = |types: &[DataType]| -> anyhow::Result<()> {
       for ty in types {
         if *ty == data_type {
@@ -67,7 +70,10 @@ impl Parser {
         self.stream.fetch_ascii(data_of_offset_position, data_count as usize)
       }
     };
-    // See: p.17
+    /* ************************************************************************
+     * Analyze via tag
+     * See p.17 for correspondence between tag name and value.
+     *************************************************************************/
     let entry = match tag {
       254 => {
         // p.20
@@ -128,7 +134,7 @@ impl Parser {
         warn!("Unknown Tag: {}", tag);
         Entry::Unknown(tag, data_type, data_count, data_or_offset)
       }
-    };
+    };g
     Ok(entry)
   }
 }
