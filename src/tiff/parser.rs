@@ -53,7 +53,7 @@ impl Parser {
     let data_offset = self.stream.position()?;
     let data = self.stream.read_u32()?;
     let offset = data as u64;
-    /* ************************************************************************
+    /* ***********************************************************************
      * util functions
      * ***********************************************************************/
     let check_type = |types: &[DataType]| -> anyhow::Result<()> {
