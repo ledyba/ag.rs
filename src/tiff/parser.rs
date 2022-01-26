@@ -83,21 +83,21 @@ impl Parser {
         Entry::NewSubFileType {
           is_thumbnail: (data & 1) == 1,
         }
-      },
+      }
       256 => {
         // p.20
         check_type(&[DataType::U16, DataType::U32])?;
         Entry::ImageWidth(data)
-      },
+      }
       257 => {
         // p.20
         check_type(&[DataType::U16, DataType::U32])?;
         Entry::ImageLength(data)
-      },
+      }
       258 => {
         // TODO
         Entry::BitsPerSample
-      },
+      }
       259 => {
         // p.30
         check_type(&[DataType::U16])?;
@@ -106,11 +106,11 @@ impl Parser {
           7 => Entry::Compression(Compression::Jpeg),
           _ => Entry::Compression(Compression::Unknown(data as u16)),
         }
-      },
+      }
       262 => {
         // TODO
         Entry::PhotometricInterpretation
-      },
+      }
       270 => {
         check_type(&[DataType::Ascii])?;
         let description = read_ascii()?;
