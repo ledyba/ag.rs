@@ -20,7 +20,6 @@ fn main() -> anyhow::Result<()> {
       .arg(Arg::new("filename.arw")
         .help("File path to load")
         .index(1)
-        .multiple_values(true)
         .takes_value(true)
         .required(true)));
   let m = app.get_matches();
