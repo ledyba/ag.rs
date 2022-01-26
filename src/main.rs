@@ -9,17 +9,18 @@ fn main() -> anyhow::Result<()> {
   let app = clap::App::new("ag")
     .author("Kaede Fujisaki")
     .about("ARW Parser and Image generator")
-    .arg(Arg::with_name("verbose")
+    .setting(clap::AppSettings::ArgRequiredElseHelp)
+    .arg(Arg::new("verbose")
       .long("verbose")
-      .short("v")
+      .short('v')
       .required(false)
       .takes_value(false)
       .help("Show verbose message"))
-    .subcommand(SubCommand::with_name("load")
-      .arg(Arg::with_name("filename.arw")
+    .subcommand(clap::App::new("load")
+      .arg(Arg::new("filename.arw")
         .help("File path to load")
         .index(1)
-        .multiple(false)
+        .multiple_values(true)
         .takes_value(true)
         .required(true)));
   let m = app.get_matches();
@@ -39,8 +40,6 @@ fn main() -> anyhow::Result<()> {
       _ => {}
     }
   }
-
   // Nothing to do!
-  eprintln!("{}", m.usage());
   return Err(anyhow::Error::msg("Please specify a subcommand to do."));
 }
