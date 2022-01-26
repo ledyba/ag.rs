@@ -9,3 +9,4 @@
 - TIFF/EP
   - [TIFF/EP - Wikipedia](https://en.wikipedia.org/wiki/TIFF/EP)
   - [ISO - ISO 12234-2:2001 - Electronic still-picture imaging — Removable memory — Part 2: TIFF/EP image data format](https://www.iso.org/standard/29377.html)
+  - [ncruces/dcraw: Mirror of Dave Coffin's dcraw, with full history](https://github.com/ncruces/dcraw)
