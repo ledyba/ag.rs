@@ -1,5 +1,5 @@
 use clap::{Arg, SubCommand};
-use log::LevelFilter;
+use log::{error, LevelFilter};
 
 mod app;
 mod tiff;
@@ -36,7 +36,9 @@ fn main() -> anyhow::Result<()> {
           return app::load(path);
         }
       }
-      _ => {}
+      cmd => {
+        return Err(anyhow::Error::msg(format!("Unknown command: {}", cmd)));
+      }
     }
   }
   // Nothing to do!
