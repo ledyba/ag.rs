@@ -20,7 +20,15 @@ pub enum Orientation { // Counter-clockwise
   Rotate180,
   Rotate270,
   Rotate90,
+  Undefined(u16),
+}
+
+#[derive(Clone, Debug)]
+pub enum ResolutionUnit {
   Unknown,
+  Inch,
+  Centimeter,
+  Undefined(u16),
 }
 
 #[derive(Clone, Debug)]
@@ -41,6 +49,7 @@ pub enum Entry {
   Orientation(Orientation),
   XResolution(UnsignedRational),
   YResolution(UnsignedRational),
+  ResolutionUnit(ResolutionUnit),
   Software(String),
   DateTime(String),
   // Unknown

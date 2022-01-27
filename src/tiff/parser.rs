@@ -126,12 +126,12 @@ impl Parser {
       }
       274 => {
         check_type(&[DataType::U16])?;
-        match data_count {
+        match data {
           1 => Entry::Orientation(Orientation::Rotate0),
           3 => Entry::Orientation(Orientation::Rotate180),
           6 => Entry::Orientation(Orientation::Rotate270),
           8 => Entry::Orientation(Orientation::Rotate90),
-          _ => Entry::Orientation(Orientation::Unknown),
+          _ => Entry::Orientation(Orientation::Undefined(data as u16)),
         }
       }
       282 => {
@@ -141,6 +141,15 @@ impl Parser {
       283 => {
         check_type(&[DataType::Rational])?;
         Entry::YResolution(self.stream.fetch_unsigned_rational(offset)?)
+      }
+      296 => { // p.22
+        check_type(&[DataType::U16])?;
+        match data {
+          1 => Entry::ResolutionUnit(ResolutionUnit::Unknown),
+          2 => Entry::ResolutionUnit(ResolutionUnit::Inch),
+          3 => Entry::ResolutionUnit(ResolutionUnit::Centimeter),
+          _ => Entry::ResolutionUnit(ResolutionUnit::Undefined(data as u16)),
+        }
       }
       305 => {
         check_type(&[DataType::Ascii])?;
