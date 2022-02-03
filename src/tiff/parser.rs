@@ -72,6 +72,13 @@ impl Parser {
         self.stream.fetch_ascii(data_offset, data_count as usize)
       }
     };
+    let mut read_binary = || {
+      if data_count > 4 {
+        self.stream.fetch_vec_u8(offset, data_count as usize)
+      } else {
+        self.stream.fetch_vec_u8(data_offset, data_count as usize)
+      }
+    };
     /* ************************************************************************
      * Analyze via tag
      * See p.17 for correspondence between tag name and value.
