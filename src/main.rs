@@ -1,4 +1,4 @@
-use clap::{Arg, SubCommand};
+use clap::Arg;
 use log::{error, LevelFilter};
 
 mod app;
