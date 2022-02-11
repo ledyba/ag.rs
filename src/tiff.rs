@@ -52,6 +52,12 @@ pub enum Entry {
   ResolutionUnit(ResolutionUnit),
   Software(String),
   DateTime(String),
+  WhitePoint{x: UnsignedRational, y: UnsignedRational},
+  PrimaryChromaticities{
+    red_x: UnsignedRational, red_y: UnsignedRational,
+    green_x: UnsignedRational, green_y: UnsignedRational,
+    blue_x: UnsignedRational, blue_y: UnsignedRational,
+  },
   // Unknown
   Unknown(u16, DataType, u32, u32)
 }

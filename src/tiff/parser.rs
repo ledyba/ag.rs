@@ -68,19 +68,19 @@ impl Parser {
     let entry = match tag {
       254 => {
         // p.20
-        ctx.check_type(&[DataType::U32])?;
+        ctx.check_type([DataType::U32])?;
         Entry::NewSubFileType {
           is_thumbnail: (ctx.data & 1) == 1,
         }
       }
       256 => {
         // p.20
-        ctx.check_type(&[DataType::U16, DataType::U32])?;
+        ctx.check_type([DataType::U16, DataType::U32])?;
         Entry::ImageWidth(ctx.data)
       }
       257 => {
         // p.20
-        ctx.check_type(&[DataType::U16, DataType::U32])?;
+        ctx.check_type([DataType::U16, DataType::U32])?;
         Entry::ImageLength(ctx.data)
       }
       258 => {
@@ -89,7 +89,7 @@ impl Parser {
       }
       259 => {
         // p.30
-        ctx.check_type(&[DataType::U16])?;
+        ctx.check_type([DataType::U16])?;
         match ctx.data {
           1 => Entry::Compression(Compression::NoCompression),
           7 => Entry::Compression(Compression::Jpeg),
@@ -101,20 +101,20 @@ impl Parser {
         Entry::PhotometricInterpretation
       }
       270 => {
-        ctx.check_type(&[DataType::Ascii])?;
+        ctx.check_type([DataType::Ascii])?;
         let description = ctx.read_ascii()?;
         Entry::ImageDescription(description)
       }
       271 => {
-        ctx.check_type(&[DataType::Ascii])?;
+        ctx.check_type([DataType::Ascii])?;
         Entry::Make(ctx.read_ascii()?)
       }
       272 => {
-        ctx.check_type(&[DataType::Ascii])?;
+        ctx.check_type([DataType::Ascii])?;
         Entry::Model(ctx.read_ascii()?)
       }
       274 => {
-        ctx.check_type(&[DataType::U16])?;
+        ctx.check_type([DataType::U16])?;
         match ctx.data {
           1 => Entry::Orientation(Orientation::Rotate0),
           3 => Entry::Orientation(Orientation::Rotate180),
@@ -124,15 +124,15 @@ impl Parser {
         }
       }
       282 => {
-        ctx.check_type(&[DataType::Rational])?;
+        ctx.check_type([DataType::Rational])?;
         Entry::XResolution(ctx.stream.fetch_unsigned_rational(ctx.data as u64)?)
       }
       283 => {
-        ctx.check_type(&[DataType::Rational])?;
+        ctx.check_type([DataType::Rational])?;
         Entry::YResolution(ctx.stream.fetch_unsigned_rational(ctx.data as u64)?)
       }
       296 => { // p.22
-        ctx.check_type(&[DataType::U16])?;
+        ctx.check_type([DataType::U16])?;
         match ctx.data {
           1 => Entry::ResolutionUnit(ResolutionUnit::Unknown),
           2 => Entry::ResolutionUnit(ResolutionUnit::Inch),
@@ -141,12 +141,35 @@ impl Parser {
         }
       }
       305 => {
-        ctx.check_type(&[DataType::Ascii])?;
+        ctx.check_type([DataType::Ascii])?;
         Entry::Software(ctx.read_ascii()?)
       }
       306 => {
-        ctx.check_type(&[DataType::Ascii])?;
+        ctx.check_type([DataType::Ascii])?;
         Entry::DateTime(ctx.read_ascii()?)
+      }
+      318 => { // p.83
+        ctx.check_type([DataType::Rational])?;
+        if ctx.count != 2 {
+          return Err(anyhow::Error::msg("WhitePoint requires 2 unsigned rationals"));
+        }
+        let v = ctx.read_unsigned_rationals()?;
+        Entry::WhitePoint{
+          x: v[0].clone(),
+          y: v[1].clone(),
+        }
+      }
+      319 => { // p.83
+        ctx.check_type([DataType::Rational])?;
+        if ctx.count != 6 {
+          return Err(anyhow::Error::msg("PrimaryChromaticities requires 6 unsigned rationals"));
+        }
+        let v = ctx.read_unsigned_rationals()?;
+        Entry::PrimaryChromaticities{
+          red_x: v[0].clone(), red_y: v[1].clone(),
+          green_x: v[2].clone(), green_y: v[3].clone(),
+          blue_x: v[4].clone(), blue_y: v[5].clone(),
+        }
       }
       _ => {
         warn!("Unknown Tag: {}", tag);
@@ -166,9 +189,9 @@ struct EntryContext<'s> {
 }
 
 impl <'s> EntryContext<'s> {
-  fn check_type(&self, types: &[DataType]) -> anyhow::Result<()> {
+  fn check_type<const N: usize>(&self, types: [DataType; N]) -> anyhow::Result<()> {
     for ty in types {
-      if *ty == self.ty {
+      if ty == self.ty {
       return Ok(());
       }
     }
@@ -188,6 +211,13 @@ impl <'s> EntryContext<'s> {
     } else {
       self.stream.fetch_vec_u8(self.data_offset, self.count as usize)
     }
+  }
+  fn read_unsigned_rational(&mut self) -> std::io::Result<UnsignedRational> {
+    assert_eq!(1, self.count);
+    self.stream.fetch_unsigned_rational(self.data as u64)
+  }
+  fn read_unsigned_rationals(&mut self) -> std::io::Result<Vec<UnsignedRational>> {
+    self.stream.fetch_unsigned_rationals(self.data as u64, self.count as usize)
   }
 
 }
