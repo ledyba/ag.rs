@@ -171,6 +171,12 @@ impl Parser {
           blue_x: v[4].clone(), blue_y: v[5].clone(),
         }
       }
+      513 => { // p105
+        Entry::JPEGInterChangeFormat(ctx.data != 0)
+      }
+      514 => { // p105
+        Entry::JPEGInterChangeFormatLength(ctx.data)
+      }
       _ => {
         warn!("Unknown Tag: {}", tag);
         Entry::Unknown(tag, ctx.ty, ctx.count, ctx.data)

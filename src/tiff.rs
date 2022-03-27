@@ -58,6 +58,8 @@ pub enum Entry {
     green_x: UnsignedRational, green_y: UnsignedRational,
     blue_x: UnsignedRational, blue_y: UnsignedRational,
   },
+  JPEGInterChangeFormat(bool),
+  JPEGInterChangeFormatLength(u32),
   // Unknown
   Unknown(u16, DataType, u32, u32)
 }
