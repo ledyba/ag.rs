@@ -1,5 +1,5 @@
 use clap::Arg;
-use log::{error, LevelFilter};
+use log::LevelFilter;
 
 mod app;
 mod tiff;

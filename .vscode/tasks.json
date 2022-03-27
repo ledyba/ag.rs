@@ -2,19 +2,20 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "rust: cargo run",
       "type": "cargo",
       "command": "run",
+      "args": ["--", "-v", "load", "sample/sample.arw"],
       "problemMatcher": [
         "$rustc"
       ],
-      "args": ["--", "-v", "load", "sample/sample.arw"],
-      "label": "rust: cargo run",
       "group": {
         "kind": "build",
         "isDefault": true
       }
     },
     {
+      "label": "rust: cargo test",
       "type": "cargo",
       "command": "test",
       "problemMatcher": [
@@ -23,8 +24,7 @@
       "group": {
         "kind": "test",
         "isDefault": true
-      },
-      "label": "rust: cargo test"
+      }
     }
   ]
 }

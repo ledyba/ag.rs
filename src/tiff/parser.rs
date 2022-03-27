@@ -165,7 +165,7 @@ impl Parser {
           return Err(anyhow::Error::msg("PrimaryChromaticities requires 6 unsigned rationals"));
         }
         let v = ctx.read_unsigned_rationals()?;
-        Entry::PrimaryChromaticities{
+        Entry::PrimaryChromaticities {
           red_x: v[0].clone(), red_y: v[1].clone(),
           green_x: v[2].clone(), green_y: v[3].clone(),
           blue_x: v[4].clone(), blue_y: v[5].clone(),
