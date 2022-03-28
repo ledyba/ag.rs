@@ -88,7 +88,7 @@ impl Parser {
         Entry::BitsPerSample
       }
       259 => {
-        // p.30
+        // [TIFF/EP] p.30
         ctx.check_type([DataType::U16])?;
         match ctx.data {
           1 => Entry::Compression(Compression::NoCompression),

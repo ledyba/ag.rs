@@ -39,8 +39,8 @@ pub enum ResolutionUnit {
 
 #[derive(Clone, Debug)]
 pub enum Entry {
-  // See p.117
-  // https://www.adobe.io/content/dam/udp/en/open/standards/tiff/TIFF6.pdf
+  // [TIFF] p.117
+  // [TIFF/EP] p.17
   NewSubFileType {
     is_thumbnail: bool,
   },
