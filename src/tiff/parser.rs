@@ -1,16 +1,15 @@
 use log::warn;
 use super::*;
 
-pub struct Parser {
-  stream: Stream,
+pub struct Parser <'a> {
+  stream: &'a mut Stream,
 }
 
-impl Parser {
-  pub fn open(path: &str) -> anyhow::Result<Self> {
-    let stream = Stream::open(path)?;
-    Ok(Self{
+impl <'a> Parser <'a> {
+  pub fn new(stream: &'a mut Stream) -> Self {
+    Self{
       stream,
-    })
+    }
   }
 
   pub fn parse(&mut self) -> anyhow::Result<Tiff> {
@@ -173,6 +172,16 @@ impl Parser {
       }
       330 => { // [TIFF/EP] p.21
         ctx.check_type([DataType::U32])?;
+        if ctx.count == 1 {
+          let r = ctx.fork(ctx.data, |parser| {
+            parser.parse_image_file_directories()
+          })?;
+          Entry::SubIFDs(r)
+        } else {
+          for _i in 0..ctx.count {
+          }
+          unimplemented!();
+        }
       }
       513 => { // p105
         ctx.check_type([DataType::U32])?;
@@ -230,5 +239,13 @@ impl <'s> EntryContext<'s> {
   fn read_unsigned_rationals(&mut self) -> std::io::Result<Vec<UnsignedRational>> {
     self.stream.fetch_unsigned_rationals(self.data as u64, self.count as usize)
   }
-
+  fn fork<Fn, R>(&mut self, offset: u32, f: Fn) -> anyhow::Result<R>
+    where Fn: FnOnce(&mut Parser) -> anyhow::Result<R> {
+    let current = self.stream.position()?;
+    self.stream.seek(offset as u64)?;
+    let mut parser = Parser::new(&mut self.stream);
+    let r = f(&mut parser);
+    self.stream.seek(current)?;
+    r
+  }
 }
