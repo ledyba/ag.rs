@@ -172,9 +172,11 @@ impl Parser {
         }
       }
       513 => { // p105
+        ctx.check_type([DataType::U32])?;
         Entry::JPEGInterChangeFormat(ctx.data != 0)
       }
       514 => { // p105
+        ctx.check_type([DataType::U32])?;
         Entry::JPEGInterChangeFormatLength(ctx.data)
       }
       _ => {
