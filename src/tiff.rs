@@ -9,11 +9,13 @@ pub use data_type::*;
 
 #[derive(Clone, Debug)]
 pub enum Compression {
+  // (TIFF/EP p.30)
   // Data is packed as tightly as possible into bytes,
   // padding at the end of the row to assure that each row's data ends
   // upon a byte boundary.
   NoCompression,
-  // (TIFF/EP p.30) TIFF/EP readers are only required to support Baseline DCT JPEG method.
+  // (TIFF/EP p.30)
+  // TIFF/EP readers are only required to support Baseline DCT JPEG method.
   BaselineJpeg,
   Unknown(u16)
 }
