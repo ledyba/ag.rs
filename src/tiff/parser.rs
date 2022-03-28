@@ -92,7 +92,7 @@ impl Parser {
         ctx.check_type([DataType::U16])?;
         match ctx.data {
           1 => Entry::Compression(Compression::NoCompression),
-          7 => Entry::Compression(Compression::Jpeg),
+          7 => Entry::Compression(Compression::BaselineJpeg),
           _ => Entry::Compression(Compression::Unknown(ctx.data as u16)),
         }
       }

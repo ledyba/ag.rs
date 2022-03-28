@@ -10,7 +10,7 @@ pub use data_type::*;
 #[derive(Clone, Debug)]
 pub enum Compression {
   NoCompression,
-  Jpeg,
+  BaselineJpeg, // IFF/EP readers are only required to support Baseline DCT JPEG method.
   Unknown(u16)
 }
 
