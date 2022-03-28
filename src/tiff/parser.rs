@@ -159,7 +159,7 @@ impl Parser {
           y: v[1].clone(),
         }
       }
-      319 => { // p.83
+      319 => { // [TIFF] p.83
         ctx.check_type([DataType::Rational])?;
         if ctx.count != 6 {
           return Err(anyhow::Error::msg("PrimaryChromaticities requires 6 unsigned rationals"));
@@ -170,6 +170,9 @@ impl Parser {
           green_x: v[2].clone(), green_y: v[3].clone(),
           blue_x: v[4].clone(), blue_y: v[5].clone(),
         }
+      }
+      330 => { // [TIFF/EP] p.21
+        ctx.check_type([DataType::U32])?;
       }
       513 => { // p105
         ctx.check_type([DataType::U32])?;

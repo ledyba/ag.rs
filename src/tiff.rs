@@ -64,6 +64,7 @@ pub enum Entry {
     green_x: UnsignedRational, green_y: UnsignedRational,
     blue_x: UnsignedRational, blue_y: UnsignedRational,
   },
+  SubIFDs(Vec<ImageFileDirectory>),
   JPEGInterChangeFormat(bool),
   JPEGInterChangeFormatLength(u32),
   // Unknown
