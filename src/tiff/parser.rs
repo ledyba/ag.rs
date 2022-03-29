@@ -83,8 +83,9 @@ impl <'a> Parser <'a> {
         Entry::ImageLength(ctx.data)
       }
       258 => {
-        // TODO
-        Entry::BitsPerSample
+        ctx.check_type([DataType::U16])?;
+        let bpp = ctx.read_u16s()?;
+        Entry::BitsPerSample(bpp)
       }
       259 => {
         // [TIFF/EP] p.30
@@ -244,6 +245,13 @@ impl <'s> EntryContext<'s> {
   }
   fn read_unsigned_rationals(&mut self) -> std::io::Result<Vec<UnsignedRational>> {
     self.stream.fetch_unsigned_rationals(self.data as u64, self.count as usize)
+  }
+  fn read_u16s(&mut self) -> std::io::Result<Vec<u16>> {
+    if self.count > 2 {
+      self.stream.fetch_vec_u16(self.data as u64, self.count as usize)
+    } else {
+      self.stream.fetch_vec_u16(self.data_offset, self.count as usize)
+    }
   }
   fn fork<Fn, R>(&mut self, offset: u32, f: Fn) -> anyhow::Result<R>
     where Fn: FnOnce(&mut Parser) -> anyhow::Result<R> {

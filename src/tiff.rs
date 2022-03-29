@@ -55,7 +55,7 @@ pub enum Entry {
   },
   ImageWidth(u32),
   ImageLength(u32),
-  BitsPerSample,
+  BitsPerSample(Vec<u16>),
   Compression(Compression),
   PhotometricInterpretation(PhotometricInterpretation),
   ImageDescription(String),
