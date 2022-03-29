@@ -93,7 +93,7 @@ impl <'a> Parser <'a> {
         match ctx.data {
           1 => Entry::Compression(Compression::NoCompression),
           7 => Entry::Compression(Compression::BaselineJpeg),
-          _ => Entry::Compression(Compression::Unknown(ctx.data as u16)),
+          _ => Entry::Compression(Compression::Undefined(ctx.data as u16)),
         }
       }
       262 => {
@@ -103,7 +103,7 @@ impl <'a> Parser <'a> {
           2 => Entry::PhotometricInterpretation(PhotometricInterpretation::RGB),
           6 => Entry::PhotometricInterpretation(PhotometricInterpretation::YCbCr),
           32803 => Entry::PhotometricInterpretation(PhotometricInterpretation::ColorFilterArray),
-          u => Entry::PhotometricInterpretation(PhotometricInterpretation::Unknown(u as u16)),
+          u => Entry::PhotometricInterpretation(PhotometricInterpretation::Undefined(u as u16)),
         }
       }
       270 => {
@@ -206,12 +206,12 @@ impl <'a> Parser <'a> {
         ctx.check_type([DataType::U16])?;
         match ctx.data {
           2 => Entry::YCbCrPositioning(YCbCrPositioning::Cosited),
-          n => Entry::YCbCrPositioning(YCbCrPositioning::Unknown(ctx.data as u16)),
+          n => Entry::YCbCrPositioning(YCbCrPositioning::Undefined(ctx.data as u16)),
         }
       }
       _ => {
         warn!("Unknown Tag: {}", tag);
-        Entry::Unknown(tag, ctx.ty, ctx.count, ctx.data)
+        Entry::Undefined(tag, ctx.ty, ctx.count, ctx.data)
       }
     };
     Ok(entry)

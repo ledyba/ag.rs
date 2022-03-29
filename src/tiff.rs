@@ -17,7 +17,7 @@ pub enum Compression {
   // (TIFF/EP p.30)
   // TIFF/EP readers are only required to support Baseline DCT JPEG method.
   BaselineJpeg,
-  Unknown(u16)
+  Undefined(u16)
 }
 
 #[derive(Clone, Debug)]
@@ -26,7 +26,7 @@ pub enum PhotometricInterpretation {
   RGB,
   YCbCr,
   ColorFilterArray,
-  Unknown(u16),
+  Undefined(u16),
 }
 
 #[derive(Clone, Debug)]
@@ -48,7 +48,7 @@ pub enum ResolutionUnit {
 
 pub enum YCbCrPositioning {
   Cosited,
-  Unknown(u16)
+  Undefined(u16)
 }
 
 #[derive(Clone, Debug)]
@@ -83,8 +83,8 @@ pub enum Entry {
   JPEGInterChangeFormat(bool),
   JPEGInterChangeFormatLength(u32),
   YCbCrPositioning(YCbCrPositioning),
-  // Unknown
-  Unknown(u16, DataType, u32, u32)
+  // Undefined
+  Undefined(u16, DataType, u32, u32)
 }
 
 #[derive(Clone, Debug)]
