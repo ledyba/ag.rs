@@ -91,7 +91,14 @@ impl Tiff {
   fn inspect_dir(&self, i: i32, dir: &ImageFileDirectory, indent: usize) {
     info!("{:indent$}<<ImageFileDirectory {}>>", " ", i, indent = indent);
     for ent in dir.entries.iter() {
-      info!("{:indent$}- {:?}", " ", ent, indent = indent + 2);
+      if let &Entry::SubIFDs(ref vs) = ent {
+        info!("{:indent$}- SubIFDs:", " ", indent = indent + 2);
+        for (i, v) in vs.iter().enumerate() {
+          self.inspect_dir(i as i32, v, indent + 4);
+        }
+      } else {
+        info!("{:indent$}- {:?}", " ", ent, indent = indent + 2);
+      }
     }
   }
 }
