@@ -46,6 +46,11 @@ pub enum ResolutionUnit {
   Undefined(u16),
 }
 
+pub enum YCbCrPositioning {
+  Cosited,
+  Unknown(u16)
+}
+
 #[derive(Clone, Debug)]
 pub enum Entry {
   // [TIFF] p.117
@@ -77,6 +82,7 @@ pub enum Entry {
   SubIFDs(Vec<ImageFileDirectory>),
   JPEGInterChangeFormat(bool),
   JPEGInterChangeFormatLength(u32),
+  YCbCrPositioning(YCbCrPositioning),
   // Unknown
   Unknown(u16, DataType, u32, u32)
 }

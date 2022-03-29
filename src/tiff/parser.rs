@@ -194,13 +194,20 @@ impl <'a> Parser <'a> {
           unimplemented!();
         }
       }
-      513 => { // p105
+      513 => { // [TIFF] p105
         ctx.check_type([DataType::U32])?;
         Entry::JPEGInterChangeFormat(ctx.data != 0)
       }
-      514 => { // p105
+      514 => { // [TIFF] p105
         ctx.check_type([DataType::U32])?;
         Entry::JPEGInterChangeFormatLength(ctx.data)
+      }
+      531=> { // [TIFF/EP] p.32
+        ctx.check_type([DataType::U16])?;
+        match ctx.data {
+          2 => Entry::YCbCrPositioning(YCbCrPositioning::Cosited),
+          n => Entry::YCbCrPositioning(YCbCrPositioning::Unknown(ctx.data as u16)),
+        }
       }
       _ => {
         warn!("Unknown Tag: {}", tag);
