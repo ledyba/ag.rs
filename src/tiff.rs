@@ -62,6 +62,7 @@ pub enum Entry {
   Make(String),
   Model(String),
   Orientation(Orientation),
+  SamplePerPixel(u16),
   XResolution(UnsignedRational),
   YResolution(UnsignedRational),
   ResolutionUnit(ResolutionUnit),

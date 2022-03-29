@@ -129,6 +129,10 @@ impl <'a> Parser <'a> {
           _ => Entry::Orientation(Orientation::Undefined(ctx.data as u16)),
         }
       }
+      277 => {
+        ctx.check_type([DataType::U16])?;
+        Entry::SamplePerPixel(ctx.data as u16)
+      }
       282 => {
         ctx.check_type([DataType::Rational])?;
         Entry::XResolution(ctx.stream.fetch_unsigned_rational(ctx.data as u64)?)
