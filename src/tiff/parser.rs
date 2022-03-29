@@ -104,7 +104,6 @@ impl <'a> Parser <'a> {
           32803 => Entry::PhotometricInterpretation(PhotometricInterpretation::ColorFilterArray),
           u => Entry::PhotometricInterpretation(PhotometricInterpretation::Unknown(u as u16)),
         }
-
       }
       270 => {
         ctx.check_type([DataType::Ascii])?;
