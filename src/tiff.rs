@@ -46,6 +46,7 @@ pub enum ResolutionUnit {
   Undefined(u16),
 }
 
+#[derive(Clone, Debug)]
 pub enum YCbCrPositioning {
   Cosited,
   Undefined(u16)
