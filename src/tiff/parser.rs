@@ -96,8 +96,15 @@ impl <'a> Parser <'a> {
         }
       }
       262 => {
-        // TODO
-        Entry::PhotometricInterpretation
+        ctx.check_type([DataType::U16])?;
+        match ctx.data {
+          1 => Entry::PhotometricInterpretation(PhotometricInterpretation::Grayscale),
+          2 => Entry::PhotometricInterpretation(PhotometricInterpretation::RGB),
+          6 => Entry::PhotometricInterpretation(PhotometricInterpretation::YCbCr),
+          32803 => Entry::PhotometricInterpretation(PhotometricInterpretation::ColorFilterArray),
+          u => Entry::PhotometricInterpretation(PhotometricInterpretation::Unknown(u as u16)),
+        }
+
       }
       270 => {
         ctx.check_type([DataType::Ascii])?;

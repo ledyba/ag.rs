@@ -21,6 +21,15 @@ pub enum Compression {
 }
 
 #[derive(Clone, Debug)]
+pub enum PhotometricInterpretation {
+  Grayscale,
+  RGB,
+  YCbCr,
+  ColorFilterArray,
+  Unknown(u16),
+}
+
+#[derive(Clone, Debug)]
 pub enum Orientation { // Counter-clockwise
   Rotate0,
   Rotate180,
@@ -48,7 +57,7 @@ pub enum Entry {
   ImageLength(u32),
   BitsPerSample,
   Compression(Compression),
-  PhotometricInterpretation,
+  PhotometricInterpretation(PhotometricInterpretation),
   ImageDescription(String),
   Make(String),
   Model(String),
