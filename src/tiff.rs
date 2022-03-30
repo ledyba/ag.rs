@@ -83,6 +83,11 @@ pub enum Entry {
   SubIFDs(Vec<ImageFileDirectory>),
   JPEGInterChangeFormat(bool),
   JPEGInterChangeFormatLength(u32),
+  YCbCrCoefficients {
+    luma_red: UnsignedRational,
+    luma_green: UnsignedRational,
+    luma_blue: UnsignedRational,
+  },
   YCbCrPositioning(YCbCrPositioning),
   // Undefined
   Undefined(u16, DataType, u32, u32)

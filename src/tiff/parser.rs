@@ -1,4 +1,5 @@
 use log::warn;
+use crate::tiff::Entry::YCbCrCoefficients;
 use super::*;
 
 pub struct Parser <'a> {
@@ -202,7 +203,19 @@ impl <'a> Parser <'a> {
         ctx.check_type([DataType::U32])?;
         Entry::JPEGInterChangeFormatLength(ctx.data)
       }
-      531=> { // [TIFF/EP] p.32
+      529 => { // [TIFF/EP] p.32
+        ctx.check_type([DataType::Rational])?;
+        if ctx.count != 3 {
+          return Err(anyhow::Error::msg("YCbCrCoefficients must have 3 entries."));
+        }
+        let v = ctx.read_unsigned_rationals()?;
+        YCbCrCoefficients {
+          luma_red: v[0].clone(),
+          luma_green: v[1].clone(),
+          luma_blue: v[2].clone(),
+        }
+      }
+      531 => { // [TIFF/EP] p.32
         ctx.check_type([DataType::U16])?;
         match ctx.data {
           2 => Entry::YCbCrPositioning(YCbCrPositioning::CoSited),
