@@ -132,7 +132,7 @@ impl <'a> Parser <'a> {
       }
       277 => {
         ctx.check_type([DataType::U16])?;
-        Entry::SamplePerPixel(ctx.data as u16)
+        Entry::SamplesPerPixel(ctx.data as u16)
       }
       282 => {
         ctx.check_type([DataType::Rational])?;
