@@ -205,7 +205,7 @@ impl <'a> Parser <'a> {
       531=> { // [TIFF/EP] p.32
         ctx.check_type([DataType::U16])?;
         match ctx.data {
-          2 => Entry::YCbCrPositioning(YCbCrPositioning::Cosited),
+          2 => Entry::YCbCrPositioning(YCbCrPositioning::CoSited),
           n => Entry::YCbCrPositioning(YCbCrPositioning::Undefined(ctx.data as u16)),
         }
       }
