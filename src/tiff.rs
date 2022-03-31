@@ -47,6 +47,13 @@ pub enum ResolutionUnit {
 }
 
 #[derive(Clone, Debug)]
+pub enum PlanarConfiguration {
+  Chunky,
+  Planar,
+  Unknown(u16)
+}
+
+#[derive(Clone, Debug)]
 pub enum YCbCrPositioning {
   CoSited,
   Undefined(u16)
@@ -74,6 +81,7 @@ pub enum Entry {
   StripByteCounts(Vec<u32>),
   XResolution(UnsignedRational),
   YResolution(UnsignedRational),
+  PlanarConfiguration(PlanarConfiguration),
   ResolutionUnit(ResolutionUnit),
   Software(String),
   DateTime(String),

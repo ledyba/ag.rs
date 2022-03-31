@@ -170,7 +170,15 @@ impl <'a> Parser <'a> {
         ctx.check_type([DataType::Rational])?;
         Entry::YResolution(ctx.stream.fetch_unsigned_rational(ctx.data as u64)?)
       }
-      296 => { // p.22
+      284 => { // [TIFF/EP] p.25
+        ctx.check_type([DataType::U16])?;
+        match ctx.data {
+          1 => Entry::PlanarConfiguration(PlanarConfiguration::Chunky),
+          2 => Entry::PlanarConfiguration(PlanarConfiguration::Planar),
+          n => Entry::PlanarConfiguration(PlanarConfiguration::Unknown(n as u16)),
+        }
+      }
+      296 => { // [TIFF] p.22
         ctx.check_type([DataType::U16])?;
         match ctx.data {
           1 => Entry::ResolutionUnit(ResolutionUnit::Unknown),
