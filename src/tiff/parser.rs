@@ -150,6 +150,18 @@ impl <'a> Parser <'a> {
         ctx.check_type([DataType::U16, DataType::U32])?;
         Entry::RowsPerStrip(ctx.data)
       }
+      279 => { // [TIFF/EP] p.28
+        ctx.check_type([DataType::U16, DataType::U32])?;
+        match ctx.ty {
+          DataType::U16 => {
+            Entry::StripByteCounts(ctx.read_u16s()?.iter().map(|it| *it as u32).collect())
+          }
+          DataType::U32 => {
+            Entry::StripByteCounts(ctx.read_u32s()?)
+          }
+          _ => panic!("Unreachable!"),
+        }
+      }
       282 => {
         ctx.check_type([DataType::Rational])?;
         Entry::XResolution(ctx.stream.fetch_unsigned_rational(ctx.data as u64)?)

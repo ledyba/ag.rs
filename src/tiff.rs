@@ -71,6 +71,7 @@ pub enum Entry {
   Orientation(Orientation),
   SamplesPerPixel(u16),
   RowsPerStrip(u32),
+  StripByteCounts(Vec<u32>),
   XResolution(UnsignedRational),
   YResolution(UnsignedRational),
   ResolutionUnit(ResolutionUnit),
