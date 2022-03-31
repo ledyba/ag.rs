@@ -67,6 +67,7 @@ pub enum Entry {
   ImageDescription(String),
   Make(String),
   Model(String),
+  StripOffsets(u32),
   Orientation(Orientation),
   SamplesPerPixel(u16),
   XResolution(UnsignedRational),

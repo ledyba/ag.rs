@@ -120,6 +120,10 @@ impl <'a> Parser <'a> {
         ctx.check_type([DataType::Ascii])?;
         Entry::Model(ctx.read_ascii()?)
       }
+      273 => { // [TIFF/EP] p.28
+        ctx.check_type([DataType::U16, DataType::U32])?;
+        Entry::StripOffsets(ctx.data)
+      }
       274 => {
         ctx.check_type([DataType::U16])?;
         match ctx.data {
