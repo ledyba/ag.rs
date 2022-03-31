@@ -122,7 +122,15 @@ impl <'a> Parser <'a> {
       }
       273 => { // [TIFF/EP] p.28
         ctx.check_type([DataType::U16, DataType::U32])?;
-        Entry::StripOffsets(ctx.data)
+        match ctx.ty {
+          DataType::U16 => {
+            Entry::StripOffsets(ctx.read_u16s()?.iter().map(|it| *it as u32).collect())
+          }
+          DataType::U32 => {
+            Entry::StripOffsets(ctx.read_u32s()?)
+          }
+          _ => panic!("Unreachable!"),
+        }
       }
       274 => {
         ctx.check_type([DataType::U16])?;
@@ -283,6 +291,13 @@ impl <'s> EntryContext<'s> {
       self.stream.fetch_vec_u16(self.data as u64, self.count as usize)
     } else {
       self.stream.fetch_vec_u16(self.data_offset, self.count as usize)
+    }
+  }
+  fn read_u32s(&mut self) -> std::io::Result<Vec<u32>> {
+    if self.count > 1 {
+      self.stream.fetch_vec_u32(self.data as u64, self.count as usize)
+    } else {
+      self.stream.fetch_vec_u32(self.data_offset, self.count as usize)
     }
   }
   fn fork<Fn, R>(&mut self, offset: u32, f: Fn) -> anyhow::Result<R>
