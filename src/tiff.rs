@@ -70,6 +70,7 @@ pub enum Entry {
   StripOffsets(u32),
   Orientation(Orientation),
   SamplesPerPixel(u16),
+  RowsPerStrip(u32),
   XResolution(UnsignedRational),
   YResolution(UnsignedRational),
   ResolutionUnit(ResolutionUnit),

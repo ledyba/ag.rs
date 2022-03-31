@@ -138,6 +138,10 @@ impl <'a> Parser <'a> {
         ctx.check_type([DataType::U16])?;
         Entry::SamplesPerPixel(ctx.data as u16)
       }
+      278 => { // [TIFF/EP] p.28
+        ctx.check_type([DataType::U16, DataType::U32])?;
+        Entry::RowsPerStrip(ctx.data)
+      }
       282 => {
         ctx.check_type([DataType::Rational])?;
         Entry::XResolution(ctx.stream.fetch_unsigned_rational(ctx.data as u64)?)
