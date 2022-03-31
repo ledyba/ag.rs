@@ -284,6 +284,7 @@ impl <'a> Parser <'a> {
         Entry::CFAPattern(vs)
       }
       50740 => { // [DNG] p.39
+        ctx.check_type([DataType::U8])?;
         Entry::DNGPrivateData(ctx.read_binary()?)
       }
       _ => {
