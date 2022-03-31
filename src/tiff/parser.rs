@@ -258,6 +258,17 @@ impl <'a> Parser <'a> {
           n => Entry::YCbCrPositioning(YCbCrPositioning::Undefined(ctx.data as u16)),
         }
       }
+      33421 => { // [TIFF/EP] p.26
+        ctx.check_type([DataType::U16])?;
+        let vs = ctx.read_u16s()?;
+        if vs.len() != 2 {
+          return Err(anyhow::Error::msg("CFARepeatPatternDim, but N != 2"));
+        }
+        Entry::CFARepeatPatternDim {
+          rows: vs[0],
+          cols: vs[1],
+        }
+      }
       _ => {
         warn!("Unknown Tag: {}", tag);
         Entry::Undefined(tag, ctx.ty, ctx.count, ctx.data)

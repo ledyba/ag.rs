@@ -100,6 +100,10 @@ pub enum Entry {
     luma_blue: UnsignedRational,
   },
   YCbCrPositioning(YCbCrPositioning),
+  CFARepeatPatternDim {
+    rows: u16,
+    cols: u16,
+  },
   // Undefined
   Undefined(u16, DataType, u32, u32)
 }
