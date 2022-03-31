@@ -283,6 +283,9 @@ impl <'a> Parser <'a> {
             }).collect();
         Entry::CFAPattern(vs)
       }
+      50740 => { // [DNG] p.39
+        Entry::DNGPrivateData(ctx.read_binary()?)
+      }
       _ => {
         warn!("Unknown Tag: {}", tag);
         Entry::Undefined(tag, ctx.ty, ctx.count, ctx.data)
