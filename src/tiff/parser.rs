@@ -201,7 +201,7 @@ impl <'a> Parser <'a> {
           return Err(anyhow::Error::msg("WhitePoint requires 2 unsigned rationals"));
         }
         let v = ctx.read_unsigned_rationals()?;
-        Entry::WhitePoint{
+        Entry::WhitePoint {
           x: v[0].clone(),
           y: v[1].clone(),
         }
@@ -213,9 +213,12 @@ impl <'a> Parser <'a> {
         }
         let v = ctx.read_unsigned_rationals()?;
         Entry::PrimaryChromaticities {
-          red_x: v[0].clone(), red_y: v[1].clone(),
-          green_x: v[2].clone(), green_y: v[3].clone(),
-          blue_x: v[4].clone(), blue_y: v[5].clone(),
+          red_x: v[0].clone(),
+          red_y: v[1].clone(),
+          green_x: v[2].clone(),
+          green_y: v[3].clone(),
+          blue_x: v[4].clone(),
+          blue_y: v[5].clone(),
         }
       }
       330 => { // [TIFF/EP] p.21
@@ -226,8 +229,7 @@ impl <'a> Parser <'a> {
           })?;
           Entry::SubIFDs(r)
         } else {
-          for _i in 0..ctx.count {
-          }
+          for _i in 0..ctx.count {}
           unimplemented!();
         }
       }
@@ -269,6 +271,19 @@ impl <'a> Parser <'a> {
           cols: vs[1],
         }
       }
+      33422 => { // [TIFF/EP] p.26
+        ctx.check_type([DataType::U8])?;
+        let vs =
+          ctx.read_u8s()?.iter()
+            .map(|it| match it {
+              0 => CFAPattern::R,
+              1 => CFAPattern::G,
+              2 => CFAPattern::B,
+              n => CFAPattern::Unknown(*n),
+            }).collect();
+
+        Entry::CFAPattern(vs)
+      }
       _ => {
         warn!("Unknown Tag: {}", tag);
         Entry::Undefined(tag, ctx.ty, ctx.count, ctx.data)
@@ -309,6 +324,9 @@ impl <'s> EntryContext<'s> {
     } else {
       self.stream.fetch_vec_u8(self.data_offset, self.count as usize)
     }
+  }
+  fn read_u8s(&mut self) -> std::io::Result<Vec<u8>> {
+    self.read_binary()
   }
   fn read_unsigned_rational(&mut self) -> std::io::Result<UnsignedRational> {
     assert_eq!(1, self.count);

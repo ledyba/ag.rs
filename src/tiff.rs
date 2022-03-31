@@ -54,6 +54,14 @@ pub enum PlanarConfiguration {
 }
 
 #[derive(Clone, Debug)]
+pub enum CFAPattern {
+  R,
+  G,
+  B,
+  Unknown(u8),
+}
+
+#[derive(Clone, Debug)]
 pub enum YCbCrPositioning {
   CoSited,
   Undefined(u16)
@@ -104,6 +112,7 @@ pub enum Entry {
     rows: u16,
     cols: u16,
   },
+  CFAPattern(Vec<CFAPattern>),
   // Undefined
   Undefined(u16, DataType, u32, u32)
 }
