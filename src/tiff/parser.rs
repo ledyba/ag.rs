@@ -281,7 +281,6 @@ impl <'a> Parser <'a> {
               2 => CFAPattern::B,
               n => CFAPattern::Unknown(*n),
             }).collect();
-
         Entry::CFAPattern(vs)
       }
       _ => {
