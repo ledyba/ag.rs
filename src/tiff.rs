@@ -17,6 +17,7 @@ pub enum Compression {
   // (TIFF/EP p.30)
   // TIFF/EP readers are only required to support Baseline DCT JPEG method.
   BaselineJpeg,
+  // https://www.awaresystems.be/imaging/tiff/tifftags/compression.html
   Undefined(u16)
 }
 
