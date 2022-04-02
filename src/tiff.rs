@@ -7,6 +7,7 @@ pub use stream::*;
 pub use parser::*;
 pub use data_type::*;
 
+// https://www.awaresystems.be/imaging/tiff/tifftags/compression.html
 #[derive(Clone, Debug)]
 pub enum Compression {
   // (TIFF/EP p.30)
@@ -17,7 +18,6 @@ pub enum Compression {
   // (TIFF/EP p.30)
   // TIFF/EP readers are only required to support Baseline DCT JPEG method.
   BaselineJpeg, /* 7 */
-  // https://www.awaresystems.be/imaging/tiff/tifftags/compression.html
   Undefined(u16)
 }
 
