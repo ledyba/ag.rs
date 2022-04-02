@@ -7,7 +7,6 @@ pub use stream::*;
 pub use parser::*;
 pub use data_type::*;
 
-// https://www.awaresystems.be/imaging/tiff/tifftags/compression.html
 #[derive(Clone, Debug)]
 pub enum Compression {
   // (TIFF/EP p.30)

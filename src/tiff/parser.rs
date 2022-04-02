@@ -90,6 +90,7 @@ impl <'a> Parser <'a> {
       }
       259 => {
         // [TIFF/EP] p.30
+        // https://www.awaresystems.be/imaging/tiff/tifftags/compression.html
         ctx.check_type([DataType::U16])?;
         match ctx.data {
           1 => Entry::Compression(Compression::NoCompression),
