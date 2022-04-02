@@ -1,5 +1,6 @@
 pub mod stream;
 pub mod parser;
+pub mod dumper;
 pub mod data_type;
 
 use log::info;

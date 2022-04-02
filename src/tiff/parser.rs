@@ -258,7 +258,7 @@ impl <'a> Parser <'a> {
         ctx.check_type([DataType::U16])?;
         match ctx.data {
           2 => Entry::YCbCrPositioning(YCbCrPositioning::CoSited),
-          n => Entry::YCbCrPositioning(YCbCrPositioning::Undefined(ctx.data as u16)),
+          n => Entry::YCbCrPositioning(YCbCrPositioning::Undefined(n as u16)),
         }
       }
       33421 => { // [TIFF/EP] p.26
