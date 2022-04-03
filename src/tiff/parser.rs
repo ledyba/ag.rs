@@ -276,11 +276,11 @@ impl <'a> Parser <'a> {
         ctx.check_type([DataType::U8])?;
         let vs =
           ctx.read_u8s()?.iter()
-            .map(|it| match it {
+            .map(|it| match *it {
               0 => CFAPattern::R,
               1 => CFAPattern::G,
               2 => CFAPattern::B,
-              n => CFAPattern::Unknown(*n),
+              n => CFAPattern::Unknown(n),
             }).collect();
         Entry::CFAPattern(vs)
       }
