@@ -3,6 +3,7 @@
 # References
 
 - TIFF format
+  - [Tagged Image File Format - Wikipedia](https://ja.wikipedia.org/wiki/Tagged_Image_File_Format)
   - [TIFF(Adobe)](https://www.adobe.io/open/standards/TIFF.html)
   - [TIFF/RAW(JpegAnalyzer)](https://hp.vector.co.jp/authors/VA032610/operation/TiffAnalyze.htm)
   - [CGファイル概説　第5章　TIFFファイル](http://www.snap-tck.com/room03/c02/cg/cg05_01.html)
