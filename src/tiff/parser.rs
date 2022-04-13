@@ -284,6 +284,10 @@ impl <'a> Parser <'a> {
             }).collect();
         Entry::CFAPattern(vs)
       }
+      34665 => { // https://www.awaresystems.be/imaging/tiff/tifftags/exififd.html
+        ctx.check_type([DataType::U32])?;
+        Entry::ExifIFD(ctx.fork(ctx.data, |parser| parser.parse_image_file_directories())?)
+      }
       50740 => { // [DNG] p.39
         ctx.check_type([DataType::U8])?;
         Entry::DNGPrivateData(ctx.read_binary()?)

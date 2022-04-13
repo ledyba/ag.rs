@@ -114,6 +114,7 @@ pub enum Entry {
     cols: u16,
   },
   CFAPattern(Vec<CFAPattern>),
+  ExifIFD(Vec<ImageFileDirectory>),
   DNGPrivateData(Vec<u8>),
   // Undefined
   Undefined(u16, DataType, u32, u32)
