@@ -15,9 +15,17 @@ pub enum Compression {
   // padding at the end of the row to assure that each row's data ends
   // upon a byte boundary.
   NoCompression, /* 1 */
+  // ('old-style' JPEG, later overridden in Technote2)
+  OldJpeg, /* 6 */
   // (TIFF/EP p.30)
   // TIFF/EP readers are only required to support Baseline DCT JPEG method.
   BaselineJpeg, /* 7 */
+  // (DNG)
+  // Compatibility Issue 10: Deflate Compression
+  // Support for compression code 8 (Deflate) was added in DNG Version 1.4.0.0.
+  // DNG writers should set the DNGBackwardVersion tag to a minimum of 1.4.0.0 if the main image IFD uses
+  // compression code 8.
+  AdobeDeflate, /* 8 */
   Undefined(u16)
 }
 
