@@ -1,4 +1,3 @@
-use std::fmt::format;
 use std::fs::File;
 use std::io::Write;
 use crate::tiff::{Entry, ImageFileDirectory, Stream, Tiff};
