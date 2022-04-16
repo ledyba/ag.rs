@@ -3,7 +3,6 @@
 # References
 
 - TIFF format
-  - [EXIF.org – EXIF and related resources](https://www.exif.org/)
   - [Tagged Image File Format - Wikipedia](https://ja.wikipedia.org/wiki/Tagged_Image_File_Format)
   - [TIFF(Adobe)](https://www.adobe.io/open/standards/TIFF.html)
   - [TIFF/RAW(JpegAnalyzer)](https://hp.vector.co.jp/authors/VA032610/operation/TiffAnalyze.htm)
