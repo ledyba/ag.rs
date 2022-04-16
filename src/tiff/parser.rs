@@ -296,7 +296,7 @@ impl <'a> Parser <'a> {
       }
       _ => {
         warn!("Unknown Tag: {}", tag);
-        Entry::Undefined(tag, ctx.ty, ctx.count, ctx.data)
+        Entry::Unknown(tag, ctx.ty, ctx.count, ctx.data)
       }
     };
     Ok(entry)

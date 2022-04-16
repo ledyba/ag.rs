@@ -124,8 +124,8 @@ pub enum Entry {
   CFAPattern(Vec<CFAPattern>),
   ExifIFD(Vec<ImageFileDirectory>),
   DNGPrivateData(Vec<u8>),
-  // Undefined
-  Undefined(u16, DataType, u32, u32)
+  // Unknown by this parser.
+  Unknown(u16, DataType, u32, u32)
 }
 
 #[derive(Clone, Debug)]
