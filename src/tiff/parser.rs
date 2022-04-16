@@ -1,4 +1,3 @@
-use core::panicking::panic;
 use log::warn;
 use crate::tiff::Entry::YCbCrCoefficients;
 use super::*;
