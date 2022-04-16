@@ -77,9 +77,9 @@ pub enum YCbCrPositioning {
 }
 
 #[derive(Clone, Debug)]
+// [TIFF] p.117
+// [TIFF/EP] p.17
 pub enum Entry {
-  // [TIFF] p.117
-  // [TIFF/EP] p.17
   NewSubFileType {
     is_thumbnail: bool,
   },
@@ -117,6 +117,7 @@ pub enum Entry {
     luma_blue: UnsignedRational,
   },
   YCbCrPositioning(YCbCrPositioning),
+  XMP(Vec<u8>),
   CFARepeatPatternDim {
     rows: u16,
     cols: u16,

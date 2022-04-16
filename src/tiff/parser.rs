@@ -1,3 +1,4 @@
+use core::panicking::panic;
 use log::warn;
 use crate::tiff::Entry::YCbCrCoefficients;
 use super::*;
@@ -262,6 +263,11 @@ impl <'a> Parser <'a> {
           2 => Entry::YCbCrPositioning(YCbCrPositioning::CoSited),
           n => Entry::YCbCrPositioning(YCbCrPositioning::Undefined(n as u16)),
         }
+      }
+      700 => {
+        // https://www.awaresystems.be/imaging/tiff/tifftags/xmp.html
+        ctx.check_type([DataType::U8])?;
+        Entry::XMP(ctx.read_u8s()?)
       }
       33421 => { // [TIFF/EP] p.26
         ctx.check_type([DataType::U16])?;
