@@ -17,12 +17,18 @@ impl <'a> Dumper <'a> {
   pub fn dump(&mut self) -> anyhow::Result<()> {
     self.dump_directories("", &self.image.directories)
   }
-  fn dump_directories(&mut self, levels: &str, dirs: &Vec<ImageFileDirectory>)
+  fn dump_directories(&mut self, depth: &str, dirs: &Vec<ImageFileDirectory>)
     -> anyhow::Result<()>
   {
     for (idx, dir) in dirs.iter().enumerate() {
+      let next_depth = if depth == "" {
+        format!("{}", idx)
+      } else {
+        format!("{}-{}", depth, idx)
+      };
       let mut offsets: Option<Vec<u32>> = None;
       let mut bytes: Option<Vec<u32>> = None;
+      let mut strip_idx = 0 as usize;
       for e in dir.entries.iter() {
         match e {
           Entry::StripOffsets(vs) => {
@@ -32,12 +38,7 @@ impl <'a> Dumper <'a> {
             bytes = Some(vs.clone());
           }
           Entry::SubIFDs(dirs) => {
-            let next_level = if levels == "" {
-              format!("{}", idx)
-            } else {
-              format!("{}-{}", levels, idx)
-            };
-            self.dump_directories(&next_level, dirs);
+            self.dump_directories(&next_depth, dirs)?;
           }
           _ => {}
         }
@@ -52,7 +53,7 @@ impl <'a> Dumper <'a> {
         for (idx, (offset, bytes)) in offsets.iter().zip(bytes.iter()).enumerate() {
           self.stream.seek(*offset as u64)?;
           let data = self.stream.read_vec_u8(*bytes as usize)?;
-          let mut f = File::create(format!("{}_{}.dump", levels, idx))?;
+          let mut f = File::create(format!("{}_{}.dump", next_depth, strip_idx))?;
           f.write_all(&data)?;
         }
       } else {
