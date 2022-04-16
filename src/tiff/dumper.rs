@@ -8,7 +8,7 @@ pub struct Dumper <'a> {
 }
 
 impl <'a> Dumper <'a> {
-  pub fn new(stream: &'a mut Stream,image: &'a Tiff) -> Self {
+  pub fn new(stream: &'a mut Stream, image: &'a Tiff) -> Self {
     Self {
       stream,
       image,
