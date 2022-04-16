@@ -1,5 +1,3 @@
-extern crate core;
-
 use clap::Arg;
 use log::LevelFilter;
 
