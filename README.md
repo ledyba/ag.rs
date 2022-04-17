@@ -5,6 +5,7 @@
 - TIFF format
   - [Tagged Image File Format - Wikipedia](https://ja.wikipedia.org/wiki/Tagged_Image_File_Format)
   - [TIFF(Adobe)](https://www.adobe.io/open/standards/TIFF.html)
+    - [Developer Resources](https://web.archive.org/web/20160306201233/http://partners.adobe.com/public/developer/tiff/index.html#spec)
   - [TIFF/RAW(JpegAnalyzer)](https://hp.vector.co.jp/authors/VA032610/operation/TiffAnalyze.htm)
   - [CGファイル概説　第5章　TIFFファイル](http://www.snap-tck.com/room03/c02/cg/cg05_01.html)
   - [JHOVE | TIFF-hul Module](https://jhove.openpreservation.org/modules/tiff/)
