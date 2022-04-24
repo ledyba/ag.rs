@@ -18,3 +18,5 @@
   - [ncruces/dcraw: Mirror of Dave Coffin's dcraw, with full history](https://github.com/ncruces/dcraw)
 - DNG (Adobe)
   - [Digital Negative (DNG), Adobe DNG Converter | Adobe Photoshop](https://helpx.adobe.com/camera-raw/digital-negative.html)
+- Other projects
+  - [LibRaw/LibRaw: LibRaw is a library for reading RAW files from digital cameras](https://github.com/LibRaw/LibRaw)
