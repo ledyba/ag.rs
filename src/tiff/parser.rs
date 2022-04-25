@@ -107,7 +107,7 @@ impl <'a> Parser <'a> {
           2 => Entry::PhotometricInterpretation(PhotometricInterpretation::RGB),
           6 => Entry::PhotometricInterpretation(PhotometricInterpretation::YCbCr),
           32803 => Entry::PhotometricInterpretation(PhotometricInterpretation::ColorFilterArray),
-          u => Entry::PhotometricInterpretation(PhotometricInterpretation::Undefined(u as u16)),
+          _ => Entry::PhotometricInterpretation(PhotometricInterpretation::Undefined(ctx.data as u16)),
         }
       }
       270 => {
