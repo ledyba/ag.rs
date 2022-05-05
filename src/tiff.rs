@@ -161,4 +161,30 @@ impl Tiff {
       }
     }
   }
+  pub fn root_ifd(&self) -> Option<&ImageFileDirectory> {
+    self.directories.get(0)
+  }
+}
+
+impl ImageFileDirectory {
+  fn find<'a, F, R>(&'a self, f: F) -> Option<R>
+  where
+    F: Fn(&'a Entry) -> Option<R>
+  {
+    for entry in &self.entries {
+      let r = f(entry);
+      if r.is_some() {
+        return r;
+      }
+    }
+    None
+  }
+  pub fn make<'a>(&'a self) -> Option<&'a str> {
+    self.find(|it: &'a Entry| match it {
+      Entry::Make(str) => {
+        return Some(str.as_str())
+      }
+      _ => None,
+    })
+  }
 }
