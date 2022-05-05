@@ -26,6 +26,7 @@ pub enum Compression {
   // DNG writers should set the DNGBackwardVersion tag to a minimum of 1.4.0.0 if the main image IFD uses
   // compression code 8.
   AdobeDeflate, /* 8 */
+  SonyARW, /* 32767 */
   Undefined(u16)
 }
 

@@ -97,6 +97,7 @@ impl <'a> Parser <'a> {
           6 => Entry::Compression(Compression::OldJpeg),
           7 => Entry::Compression(Compression::BaselineJpeg),
           8 => Entry::Compression(Compression::AdobeDeflate),
+          32767 => Entry::Compression(Compression::SonyARW),
           _ => Entry::Compression(Compression::Undefined(ctx.data as u16)),
         }
       }
