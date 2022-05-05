@@ -179,8 +179,8 @@ impl ImageFileDirectory {
     }
     None
   }
-  pub fn make<'a>(&'a self) -> Option<&'a str> {
-    self.find(|it: &'a Entry| match it {
+  pub fn make(&self) -> Option<&str> {
+    self.find(|it: &Entry| match it {
       Entry::Make(str) => {
         return Some(str.as_str())
       }
