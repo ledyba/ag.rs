@@ -161,8 +161,30 @@ impl Tiff {
       }
     }
   }
+  fn walk_and_filter_ifd<'a, 'b, 'c>(
+    &'a self,
+    acc: &'b mut Vec<&'a ImageFileDirectory>,
+    f: &'c impl Fn(&ImageFileDirectory)->bool,
+    dirs: &'a Vec<ImageFileDirectory>)
+  {
+    for d in dirs {
+      if f(d) {
+        acc.push(d);
+      }
+      for ent in &d.entries {
+        if let &Entry::SubIFDs(ref dirs) = ent {
+          self.walk_and_filter_ifd(acc, f, dirs);
+        }
+      }
+    }
+  }
   pub fn root_ifd(&self) -> Option<&ImageFileDirectory> {
     self.directories.get(0)
+  }
+  pub fn filter_ifd(&self, f: impl Fn(&ImageFileDirectory)->bool) -> Vec<&ImageFileDirectory> {
+    let mut acc:Vec<&ImageFileDirectory> = Vec::new();
+    self.walk_and_filter_ifd(&mut acc, &f,&self.directories);
+    acc
   }
 }
 
