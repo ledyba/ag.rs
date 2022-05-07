@@ -3,6 +3,7 @@ use log::LevelFilter;
 
 mod app;
 mod tiff;
+mod raw;
 
 fn main() -> anyhow::Result<()> {
   let mut log_builder = env_logger::Builder::from_default_env();
