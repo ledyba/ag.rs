@@ -161,7 +161,7 @@ impl Tiff {
       }
     }
   }
-  fn walk_and_filter_ifd<'a, 'b, 'c>(
+  fn walk_and_filter_ifd_recursive<'a, 'b, 'c>(
     &'a self,
     acc: &'b mut Vec<&'a ImageFileDirectory>,
     f: &'c impl Fn(&ImageFileDirectory)->bool,
@@ -173,7 +173,7 @@ impl Tiff {
       }
       for ent in &d.entries {
         if let &Entry::SubIFDs(ref dirs) = ent {
-          self.walk_and_filter_ifd(acc, f, dirs);
+          self.walk_and_filter_ifd_recursive(acc, f, dirs);
         }
       }
     }
@@ -184,9 +184,9 @@ impl Tiff {
   pub fn root_ifd(&self) -> Option<&ImageFileDirectory> {
     self.directories.get(0)
   }
-  pub fn filter_ifd(&self, f: impl Fn(&ImageFileDirectory)->bool) -> Vec<&ImageFileDirectory> {
+  pub fn filter_ifd_recursive(&self, f: impl Fn(&ImageFileDirectory)->bool) -> Vec<&ImageFileDirectory> {
     let mut acc:Vec<&ImageFileDirectory> = Vec::new();
-    self.walk_and_filter_ifd(&mut acc, &f,&self.directories);
+    self.walk_and_filter_ifd_recursive(&mut acc, &f, &self.directories);
     acc
   }
 }

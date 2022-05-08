@@ -37,7 +37,7 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
   }
 
   fn decode(&self) -> Result<Image, anyhow::Error> {
-    let ifds = self.tiff.filter_ifd(|it|
+    let ifds = self.tiff.filter_ifd_recursive(|it|
       it.find(|e|
         if let Entry::StripOffsets(_) = e {
           Some(())
