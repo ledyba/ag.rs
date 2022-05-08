@@ -9,5 +9,5 @@ pub struct Image {
 
 trait RawDecoder {
   fn is_acceptable(&self) -> bool;
-  fn decode(&self) -> Image;
+  fn decode(&self) -> Result<Image, anyhow::Error>;
 }

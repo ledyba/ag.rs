@@ -178,6 +178,9 @@ impl Tiff {
       }
     }
   }
+  pub fn image_file_directories(&self) -> &Vec<ImageFileDirectory> {
+    &self.directories
+  }
   pub fn root_ifd(&self) -> Option<&ImageFileDirectory> {
     self.directories.get(0)
   }
@@ -189,7 +192,11 @@ impl Tiff {
 }
 
 impl ImageFileDirectory {
-  fn find<'a, F, R>(&'a self, f: F) -> Option<R>
+  pub fn entries(&self) -> &Vec<Entry> {
+    &self.entries
+  }
+
+  pub fn find<'a, F, R>(&'a self, f: F) -> Option<R>
   where
     F: Fn(&'a Entry) -> Option<R>
   {
@@ -201,10 +208,65 @@ impl ImageFileDirectory {
     }
     None
   }
+
   pub fn make(&self) -> Option<&str> {
     self.find(|it: &Entry| match it {
       Entry::Make(str) => {
         return Some(str.as_str())
+      }
+      _ => None,
+    })
+  }
+
+  pub fn compression(&self) -> Option<Compression> {
+    self.find(|it: &Entry| match it {
+      Entry::Compression(compression) => {
+        Some(compression.clone())
+      }
+      _ => None,
+    })
+  }
+
+  pub fn strip_byte_offsets(&self) -> Option<&Vec<u32>> {
+    self.find(|it: &Entry| match it {
+      Entry::StripOffsets(v) => {
+        Some(v)
+      }
+      _ => None,
+    })
+  }
+
+  pub fn strip_byte_counts(&self) -> Option<&Vec<u32>> {
+    self.find(|it: &Entry| match it {
+      Entry::StripByteCounts(v) => {
+        Some(v)
+      }
+      _ => None,
+    })
+  }
+
+  pub fn bits_per_sample(&self) -> Option<&Vec<u16>> {
+    self.find(|it: &Entry| match it {
+      Entry::BitsPerSample(v) => {
+        Some(v)
+      }
+      _ => None,
+    })
+  }
+
+  pub fn image_width(&self) -> Option<u32> {
+    self.find(|it: &Entry| match it {
+      Entry::ImageWidth(v) => {
+        Some(*v)
+      }
+      _ => None,
+    })
+  }
+
+  pub fn image_height(&self) -> Option<u32> {
+    self.find(|it: &Entry| match it {
+      Entry::ImageLength(v) => {
+        Some(*v)
       }
       _ => None,
     })
