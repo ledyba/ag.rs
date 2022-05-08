@@ -6,7 +6,12 @@ use super::RawDecoder;
 
 /*
 References:
-https://github.com/darktable-org/rawspeed/blob/1a1b723420bd3c923b0ed242287e6c615cd87af4/src/librawspeed/decoders/ArwDecoder.cpp
+
+rawspeed:
+- https://github.com/darktable-org/rawspeed/blob/1a1b723420bd3c923b0ed242287e6c615cd87af4/src/librawspeed/decoders/ArwDecoder.cpp
+
+libraw:
+- https://github.com/LibRaw/LibRaw/blob/adcb898a00746c8aa886eb06cc9f5a1cb1834fca/src/metadata/tiff.cpp#L1815-L1838
 */
 
 pub struct ArwDecoder<'a> {
