@@ -108,7 +108,7 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
     let is_v1 = (count as usize) * 8 != (width as usize) * (height as usize) * (bpp as usize);
     if is_v1 {
       height += 8;
-      return Err(anyhow::Error::msg("ARWv1 is not supported"));
+      return Err(anyhow::Error::msg("ARW v1 is not supported"));
     }
 
 
