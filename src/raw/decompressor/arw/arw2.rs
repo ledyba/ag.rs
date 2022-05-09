@@ -10,6 +10,38 @@ rawspeed
 
 */
 
-pub struct Arw2Decompressor<'a> {
+use crate::raw::Image;
+use crate::tiff::{Tiff, ByteStream};
 
+pub struct Arw2Decompressor<'a> {
+  stream: &'a mut ByteStream,
+  tiff: &'a Tiff,
+  width: usize,
+  height: usize,
+  data_offset: usize,
+  data_size: usize,
+}
+
+impl <'a> Arw2Decompressor<'a> {
+  pub fn new(
+    stream: &'a mut ByteStream,
+    tiff: &'a Tiff,
+    width: usize,
+    height: usize,
+    data_offset: usize,
+    data_size: usize,
+  ) -> Self {
+    Self {
+      stream,
+      tiff,
+      width,
+      height,
+      data_offset,
+      data_size,
+    }
+  }
+
+  pub fn decode(&self) -> Result<Image, anyhow::Error> {
+    todo!()
+  }
 }

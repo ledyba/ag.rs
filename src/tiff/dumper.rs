@@ -1,14 +1,14 @@
 use std::fs::File;
 use std::io::Write;
-use crate::tiff::{Entry, ImageFileDirectory, Stream, Tiff};
+use crate::tiff::{Entry, ImageFileDirectory, ByteStream, Tiff};
 
 pub struct Dumper <'a> {
-  stream: &'a mut Stream,
+  stream: &'a mut ByteStream,
   image: &'a Tiff,
 }
 
 impl <'a> Dumper <'a> {
-  pub fn new(stream: &'a mut Stream, image: &'a Tiff) -> Self {
+  pub fn new(stream: &'a mut ByteStream, image: &'a Tiff) -> Self {
     Self {
       stream,
       image,

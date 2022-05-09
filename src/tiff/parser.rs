@@ -3,11 +3,11 @@ use crate::tiff::Entry::YCbCrCoefficients;
 use super::*;
 
 pub struct Parser <'a> {
-  stream: &'a mut Stream,
+  stream: &'a mut ByteStream,
 }
 
 impl <'a> Parser <'a> {
-  pub fn new(stream: &'a mut Stream) -> Self {
+  pub fn new(stream: &'a mut ByteStream) -> Self {
     Self{
       stream,
     }
@@ -310,7 +310,7 @@ impl <'a> Parser <'a> {
 }
 
 struct EntryContext<'s> {
-  stream: &'s mut Stream,
+  stream: &'s mut ByteStream,
   ty: DataType,
   count: u32,
   data_offset: u64,

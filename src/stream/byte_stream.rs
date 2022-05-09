@@ -1,15 +1,15 @@
 use std::io::{Read, Seek, SeekFrom};
 use byteordered::{Endian, Endianness};
 use byteordered::byteorder::ReadBytesExt;
-use super::data_type::{UnsignedRational, SignedRational};
+use crate::tiff::data_type::{UnsignedRational, SignedRational};
 
-pub struct Stream {
+pub struct ByteStream {
   endian: Endianness,
   file: std::fs::File,
 }
 
-impl Stream {
-  pub fn open(path: &str) -> std::io::Result<Stream> {
+impl ByteStream {
+  pub fn open(path: &str) -> std::io::Result<ByteStream> {
     let mut file = std::fs::File::open(path)?;
     let endian = {
       let mut header: [u8; 2] = [0, 0];
@@ -261,25 +261,25 @@ impl Stream {
 
 #[cfg(test)]
 mod test {
-  use super::Stream;
+  use super::ByteStream;
 
   #[test]
   fn test_read() {
-    let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
+    let mut stream = ByteStream::open("sample/sample.arw").expect("Failed to open");
     let result = stream.read_u8().expect("Failed to read");
     assert_eq!(result, 0x49);
   }
 
   #[test]
   fn test_read_u16() {
-    let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
+    let mut stream = ByteStream::open("sample/sample.arw").expect("Failed to open");
     let result = stream.read_u16().expect("Failed to read");
     assert_eq!(result, 0x4949);
   }
 
   #[test]
   fn test_read_u32() {
-    let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
+    let mut stream = ByteStream::open("sample/sample.arw").expect("Failed to open");
     stream.skip(4).expect("Failed to skip");
     let result = stream.read_u32().expect("Failed to read");
     assert_eq!(result, 0x08);
@@ -287,7 +287,7 @@ mod test {
 
   #[test]
   fn test_fork() {
-    let mut stream = Stream::open("sample/sample.arw").expect("Failed to open");
+    let mut stream = ByteStream::open("sample/sample.arw").expect("Failed to open");
     stream.skip(4).expect("Failed to skip");
     assert_eq!(stream.position().expect("Failed to get pos"), 4);
     stream.fork(|stream| {

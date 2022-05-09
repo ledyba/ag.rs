@@ -1,8 +1,9 @@
 use std::fmt::format;
 use log::info;
+use crate::raw::Arw2Decompressor;
 use crate::raw::decoder::Image;
 use crate::tiff::{Compression, Entry, Tiff};
-use crate::tiff::Stream;
+use crate::tiff::ByteStream;
 use super::RawDecoder;
 
 /*
@@ -16,12 +17,12 @@ libraw:
 */
 
 pub struct ArwDecoder<'a> {
-  stream: &'a Stream,
+  stream: &'a mut ByteStream,
   tiff: &'a Tiff,
 }
 
 impl <'a> ArwDecoder<'a>  {
-  pub fn new(stream: &'a Stream, tiff: &'a Tiff) -> Self {
+  pub fn new(stream: &'a mut ByteStream, tiff: &'a Tiff) -> Self {
     Self {
       stream,
       tiff,
@@ -110,8 +111,14 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
       height += 8;
       return Err(anyhow::Error::msg("ARW v1 is not supported"));
     }
-
-
-    todo!()
+    let decoder = Arw2Decompressor::new(
+      self.stream,
+      self.tiff,
+      width as usize,
+      height as usize,
+      offset as usize,
+      count as usize,
+    );
+    decoder.decode()
   }
 }
