@@ -1,5 +1,5 @@
 mod arw;
-use arw::ArwDecoder;
+pub use arw::ArwDecoder;
 
 pub struct Image {
   width: usize,
@@ -7,7 +7,7 @@ pub struct Image {
   data: Vec<u8>,
 }
 
-trait RawDecoder {
+pub trait RawDecoder {
   fn is_acceptable(&self) -> bool;
   fn decode(&self) -> Result<Image, anyhow::Error>;
 }

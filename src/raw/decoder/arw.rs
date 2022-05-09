@@ -1,4 +1,5 @@
 use std::fmt::format;
+use log::info;
 use crate::raw::decoder::Image;
 use crate::tiff::{Compression, Entry, Tiff};
 use crate::tiff::Stream;
@@ -72,7 +73,7 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
     if height.is_none() {
       return Err(anyhow::Error::msg("No height"));
     }
-    let height = height.unwrap();
+    let mut height = height.unwrap();
     if offsets.is_none() {
       return Err(anyhow::Error::msg("No strip byte offsets"));
     }
@@ -96,6 +97,20 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
             offsets.len(),
             counts.len())));
     }
+    let offset = offsets[0];
+    let count = counts[0];
+    let mut bpp = bpp[0];
+    for ifd in self.tiff.filter_ifd_recursive(|it| it.make().is_some()) {
+      if ifd.make().unwrap() == "SONY" {
+        bpp = 8;
+      }
+    }
+    let is_v1 = (count as usize) * 8 != (width as usize) * (height as usize) * (bpp as usize);
+    if is_v1 {
+      height += 8;
+      return Err(anyhow::Error::msg("ARWv1 is not supported"));
+    }
+
 
     todo!()
   }

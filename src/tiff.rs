@@ -8,7 +8,7 @@ pub use stream::*;
 pub use parser::*;
 pub use data_type::*;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Compression {
   // (TIFF/EP p.30)
   // Data is packed as tightly as possible into bytes,
@@ -27,7 +27,7 @@ pub enum Compression {
   // compression code 8.
   AdobeDeflate, /* 8 */
   SonyARW, /* 32767 */
-  Undefined(u16)
+  Undefined(u16),
 }
 
 #[derive(Clone, Debug)]
