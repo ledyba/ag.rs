@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::Write;
-use crate::tiff::{Entry, ImageFileDirectory, ByteStream, Tiff};
+
+use crate::stream::ByteStream;
+use crate::tiff::{Entry, ImageFileDirectory, Tiff};
 
 pub struct Dumper <'a> {
   stream: &'a mut ByteStream,

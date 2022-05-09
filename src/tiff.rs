@@ -3,7 +3,7 @@ pub mod dumper;
 pub mod data_type;
 
 use log::info;
-pub use crate::stream::byte_stream::*;
+pub use crate::stream::*;
 pub use parser::*;
 pub use data_type::*;
 

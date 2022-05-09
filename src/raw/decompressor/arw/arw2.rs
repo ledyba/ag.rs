@@ -10,8 +10,9 @@ rawspeed
 
 */
 
+use crate::stream::ByteStream;
 use crate::raw::Image;
-use crate::tiff::{Tiff, ByteStream};
+use crate::tiff::Tiff;
 
 pub struct Arw2Decompressor<'a> {
   stream: &'a mut ByteStream,

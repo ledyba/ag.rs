@@ -3,7 +3,7 @@ use log::info;
 use crate::raw::Arw2Decompressor;
 use crate::raw::decoder::Image;
 use crate::tiff::{Compression, Entry, Tiff};
-use crate::tiff::ByteStream;
+use crate::stream::ByteStream;
 use super::RawDecoder;
 
 /*
@@ -38,7 +38,7 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
     false
   }
 
-  fn decode(&self) -> Result<Image, anyhow::Error> {
+  fn decode(&mut self) -> Result<Image, anyhow::Error> {
     let ifds = self.tiff.filter_ifd_recursive(|it|
       it.find(|e|
         if let Entry::StripOffsets(_) = e {
