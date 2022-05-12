@@ -10,7 +10,8 @@ rawspeed
 
 */
 
-use crate::stream::ByteStream;
+use std::cmp::min;
+use crate::stream::{BitStream, ByteStream};
 use crate::raw::Image;
 use crate::tiff::Tiff;
 
@@ -42,7 +43,46 @@ impl <'a> Arw2Decompressor<'a> {
     }
   }
 
-  pub fn decode(&self) -> Result<Image, anyhow::Error> {
-    todo!()
+  pub fn decode(&mut self) -> Result<Image, anyhow::Error> {
+    let mut img = Image::new(self.width, self.height);
+    for y in 0..self.height {
+      let offset = self.data_offset + self.width * y;
+      self.stream.seek(offset as u64);
+      let mut bits = BitStream::new(&mut self.stream);
+      let mut x = 0;
+      while x < self.width {
+        let max = bits.read_bits(11)?;
+        let min = bits.read_bits(11)?;
+        let i_max = bits.read_bits(4)?;
+        let i_min = bits.read_bits(4)?;
+        if i_max == i_min {
+          return Err(anyhow::Error::msg("ARW2 invariant failed, same pixel is both min and max"))
+        }
+        let mut sh = 0;
+        while (sh < 4) && ((0x80 << sh) <= (max - min)) {
+          sh += 1;
+        }
+        for i in 0..16 {
+          let p =
+          if i == i_max {
+            max
+          } else {
+            if i == i_min {
+              min
+            } else {
+              let p = bits.read_bits(7)? << sh + min;
+              std::cmp::min(0x7ff, p)
+            }
+          };
+          img.set(x + i as usize, y,p as u16);
+        }
+        if (x & 1) != 0 {
+          x += 31;
+        } else {
+          x += 1;
+        }
+      }
+    }
+    Ok(img)
   }
 }

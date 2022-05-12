@@ -11,6 +11,6 @@ pub fn load(path: &str) -> anyhow::Result<()> {
   if !decoder.is_acceptable() {
     return Err(anyhow::Error::msg("This file is not ARW!"));
   }
-  let result = decoder.decode();
+  let img = decoder.decode()?;
   Ok(())
 }

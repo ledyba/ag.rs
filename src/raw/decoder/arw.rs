@@ -111,7 +111,7 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
       height += 8;
       return Err(anyhow::Error::msg("ARW v1 is not supported"));
     }
-    let decoder = Arw2Decompressor::new(
+    let mut decoder = Arw2Decompressor::new(
       self.stream,
       self.tiff,
       width as usize,
