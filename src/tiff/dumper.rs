@@ -52,7 +52,7 @@ impl <'a> Dumper <'a> {
         if offsets.len() != bytes.len() {
           return Err(anyhow::Error::msg("StripOffsets.len != StripByteCounts.len"));
         }
-        for (idx, (offset, bytes)) in offsets.iter().zip(bytes.iter()).enumerate() {
+        for (_idx, (offset, bytes)) in offsets.iter().zip(bytes.iter()).enumerate() {
           self.stream.seek(*offset as u64)?;
           let data = self.stream.read_vec_u8(*bytes as usize)?;
           let mut f = File::create(format!("{}_{}.dump", next_depth, strip_idx))?;
