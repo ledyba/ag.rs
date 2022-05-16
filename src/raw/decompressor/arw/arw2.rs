@@ -11,6 +11,7 @@ rawspeed
 */
 
 use std::cmp::min;
+use log::info;
 use crate::stream::{BitStream, ByteStream};
 use crate::raw::Image;
 use crate::tiff::Tiff;
@@ -70,7 +71,7 @@ impl <'a> Arw2Decompressor<'a> {
             if i == i_min {
               min
             } else {
-              let p = bits.read_bits(7)? << sh + min;
+              let p = (bits.read_bits(7)? << sh) + min;
               std::cmp::min(0x7ff, p)
             }
           };

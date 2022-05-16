@@ -23,12 +23,10 @@ impl <'a> BitStream<'a> {
         self.buff = self.stream.read_u32()?;
         self.buff_left = 32;
       }
-      let left_to_load = bits - loaded_bits;
-      let load_bits = min(left_to_load, self.buff_left);
-      r = (r << load_bits) | (self.buff & (0xff >> (32-load_bits)));
-      self.buff <<= load_bits;
-      loaded_bits += load_bits;
-      self.buff_left -= load_bits;
+      r = r | (self.buff & 1) << loaded_bits;
+      self.buff >>= 1;
+      loaded_bits += 1;
+      self.buff_left -= 1;
     }
     Ok(r)
   }
