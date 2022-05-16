@@ -293,7 +293,7 @@ impl <'a> Parser <'a> {
         Entry::ExifIFD(ctx.fork(ctx.data, |parser| parser.parse_image_file_directories())?)
       }
       50706 => { // [DNG] p.22
-        ctx.check_type([DataType::U8]);
+        ctx.check_type([DataType::U8])?;
         Entry::DNGVersion(ctx.read_u8s()?)
       }
       50740 => { // [DNG] p.39

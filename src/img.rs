@@ -1,20 +1,31 @@
 use std::fs::File;
 use std::io::BufWriter;
 use std::path::Path;
+use log::info;
 use png::BitDepth;
+use crate::tiff::CFAPattern;
 
-pub struct Image {
+pub struct RawImage {
   width: usize,
   height: usize,
   data: Vec<u16>,
+  cfa_pattern: Vec<CFAPattern>,
+  cfa_dim: (usize, usize),
 }
 
-impl Image {
-  pub fn new(width: usize, height: usize) -> Self {
+impl RawImage {
+  pub fn new(
+    width: usize,
+    height: usize,
+    cfa_pattern: Vec<CFAPattern>,
+    cfa_dim: (usize, usize),
+  ) -> Self {
     Self {
       width,
       height,
       data: vec![0; width * height],
+      cfa_pattern,
+      cfa_dim,
     }
   }
   pub fn width(&self) -> usize {
@@ -33,30 +44,54 @@ impl Image {
     let idx = self.calc_idx(x,y);
     self.data[idx] = v;
   }
-  pub fn save_to_file(&self, path: impl AsRef<Path>) -> anyhow::Result<()> {
+  pub fn get(&self, x: usize, y: usize) -> (u16, u16, u16) {
+    let idx = self.calc_idx(x,y);
+    let color = self.data[idx] << 4;
+    let row = y % self.cfa_dim.1;
+    let col = x % self.cfa_dim.0;
+    match self.cfa_pattern[row * self.cfa_dim.0 + col] {
+      CFAPattern::R => (color, 0, 0),
+      CFAPattern::G => (0, color, 0),
+      CFAPattern::B => (0, 0, color),
+      CFAPattern::Unknown(_) => (color, color, color),
+    }
+  }
+  pub fn save_to_file(&self, path: impl AsRef<Path>, high_bits: bool) -> anyhow::Result<()> {
     let file = File::create(path)?;
     let mut writer = BufWriter::new(file);
-    self.save(writer)
+    self.save(writer, high_bits)
   }
-  pub fn save<F: std::io::Write>(&self, writer: BufWriter<F>) -> anyhow::Result<()> {
+  pub fn save<F: std::io::Write>(&self, writer: BufWriter<F>, high_bits: bool) -> anyhow::Result<()> {
     let mut encoder = png::Encoder::new(writer, self.width as u32, self.height as u32); // Width is 2 pixels and height is 1.
-    //encoder.set_depth(BitDepth::Sixteen);
-    encoder.set_depth(BitDepth::Eight);
-    encoder.set_color(png::ColorType::Grayscale);
+    encoder.set_color(png::ColorType::Rgb);
+    if high_bits {
+      encoder.set_depth(BitDepth::Sixteen);
+    } else {
+      encoder.set_depth(BitDepth::Eight);
+    }
     let mut writer = encoder.write_header()?;
-    let pixels = self.create_pixels();
+    let pixels = self.create_pixels(high_bits);
     writer.write_image_data(&pixels).map_err(|it| anyhow::Error::from(it))
   }
-  fn create_pixels(&self) -> Vec<u8> {
-    let mut dst = Vec::<u8>::new();
-    for pix in &self.data {
-      /*
-      let pix = pix << 4;
-      dst.push((pix >> 8) as u8);
-      dst.push((pix & 0xff) as u8);
-      */
-      dst.push(((pix >> 4) & 0xff) as u8);
+  fn create_pixels(&self, high_bits: bool) -> Vec<u8> {
+    let mut buff = Vec::<u8>::new();
+    for y in 0..self.height {
+      for x in 0..self.width {
+        let (r, g, b) = self.get(x, y);
+        if high_bits {
+          buff.push((r >> 8) as u8);
+          buff.push((r & 0xff) as u8);
+          buff.push((g >> 8) as u8);
+          buff.push((g & 0xff) as u8);
+          buff.push((b >> 8) as u8);
+          buff.push((b & 0xff) as u8);
+        } else {
+          buff.push((r >> 8) as u8);
+          buff.push((g >> 8) as u8);
+          buff.push((b >> 8) as u8);
+        }
+      }
     }
-    dst
+    buff
   }
 }

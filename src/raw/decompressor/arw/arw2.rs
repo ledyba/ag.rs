@@ -13,8 +13,8 @@ rawspeed
 use std::cmp::min;
 use log::info;
 use crate::stream::{BitStream, ByteStream};
-use crate::raw::Image;
-use crate::tiff::Tiff;
+use crate::raw::RawImage;
+use crate::tiff::{CFAPattern, Tiff};
 
 pub struct Arw2Decompressor<'a> {
   stream: &'a mut ByteStream,
@@ -23,6 +23,8 @@ pub struct Arw2Decompressor<'a> {
   height: usize,
   data_offset: usize,
   data_size: usize,
+  cfa_pattern: &'a Vec<CFAPattern>,
+  cfa_dim: (usize, usize),
 }
 
 impl <'a> Arw2Decompressor<'a> {
@@ -33,6 +35,8 @@ impl <'a> Arw2Decompressor<'a> {
     height: usize,
     data_offset: usize,
     data_size: usize,
+    cfa_pattern: &'a Vec<CFAPattern>,
+    cfa_dim: (usize, usize),
   ) -> Self {
     Self {
       stream,
@@ -41,14 +45,21 @@ impl <'a> Arw2Decompressor<'a> {
       height,
       data_offset,
       data_size,
+      cfa_pattern,
+      cfa_dim,
     }
   }
 
-  pub fn decode(&mut self) -> Result<Image, anyhow::Error> {
-    let mut img = Image::new(self.width, self.height);
+  pub fn decode(&mut self) -> Result<RawImage, anyhow::Error> {
+    let mut img = RawImage::new(
+      self.width,
+      self.height,
+      self.cfa_pattern.clone(),
+      self.cfa_dim,
+    );
     for y in 0..self.height {
       let offset = self.data_offset + self.width * y;
-      self.stream.seek(offset as u64);
+      self.stream.seek(offset as u64)?;
       let mut bits = BitStream::new(&mut self.stream);
       let mut x = 0;
       while x < self.width {

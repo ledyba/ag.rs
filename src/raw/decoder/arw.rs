@@ -1,7 +1,7 @@
 use std::fmt::format;
 use log::info;
 use crate::raw::Arw2Decompressor;
-use crate::raw::decoder::Image;
+use crate::raw::decoder::RawImage;
 use crate::tiff::{Compression, Entry, Tiff};
 use crate::stream::ByteStream;
 use super::RawDecoder;
@@ -38,7 +38,7 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
     false
   }
 
-  fn decode(&mut self) -> Result<Image, anyhow::Error> {
+  fn decode(&mut self) -> Result<RawImage, anyhow::Error> {
     let ifds = self.tiff.filter_ifd_recursive(|it|
       it.find(|e|
         if let Entry::StripOffsets(_) = e {
@@ -52,12 +52,14 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
       return Err(anyhow::Error::msg("No IFDs"));
     }
     let ifd = ifds[0];
-    let mut compression = ifd.compression();
-    let mut width = ifd.image_width();
-    let mut height = ifd.image_height();
-    let mut offsets = ifd.strip_byte_offsets();
-    let mut counts = ifd.strip_byte_counts();
-    let mut bpp = ifd.bits_per_sample();
+    let compression = ifd.compression();
+    let width = ifd.image_width();
+    let height = ifd.image_height();
+    let offsets = ifd.strip_byte_offsets();
+    let counts = ifd.strip_byte_counts();
+    let bpp = ifd.bits_per_sample();
+    let cfa_pattern = ifd.cfa_pattern();
+    let cfa_dim = ifd.cfa_pattern_dim();
     for ent in ifd.entries() {
       match ent {
         _ => {}
@@ -98,6 +100,14 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
             offsets.len(),
             counts.len())));
     }
+    if cfa_pattern.is_none() {
+      return Err(anyhow::Error::msg("CFA Pattern not found"));
+    }
+    let cfa_pattern = cfa_pattern.unwrap();
+    if cfa_dim.is_none() {
+      return Err(anyhow::Error::msg("CFA Repeat Pattern Dim not found"));
+    }
+    let cfa_dim = cfa_dim.unwrap();
     let offset = offsets[0];
     let count = counts[0];
     let mut bpp = bpp[0];
@@ -118,6 +128,8 @@ impl <'a> RawDecoder for ArwDecoder<'a> {
       height as usize,
       offset as usize,
       count as usize,
+      cfa_pattern,
+      cfa_dim,
     );
     decoder.decode()
   }

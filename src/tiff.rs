@@ -253,6 +253,24 @@ impl ImageFileDirectory {
     })
   }
 
+  pub fn cfa_pattern(&self) -> Option<&Vec<CFAPattern>> {
+    self.find(|it: &Entry| match it {
+      Entry::CFAPattern(v) => {
+        Some(v)
+      }
+      _ => None,
+    })
+  }
+
+  pub fn cfa_pattern_dim(&self) -> Option<(usize, usize)> {
+    self.find(|it: &Entry| match it {
+      Entry::CFARepeatPatternDim{rows, cols} => {
+        Some((*cols as usize, *rows as usize))
+      }
+      _ => None,
+    })
+  }
+
   pub fn image_width(&self) -> Option<u32> {
     self.find(|it: &Entry| match it {
       Entry::ImageWidth(v) => {
