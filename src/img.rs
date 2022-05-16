@@ -79,9 +79,17 @@ impl RawImage {
         };
       }
     }
-    let r = colors[0].iter().map(|it| *it as u32).sum::<u32>() / colors[0].len() as u32;
-    let g = colors[1].iter().map(|it| *it as u32).sum::<u32>() / colors[1].len() as u32;
-    let b = colors[2].iter().map(|it| *it as u32).sum::<u32>() / colors[2].len() as u32;
+    fn average_color(colors: &Vec<u16>) -> u16 {
+      let mut sum = 0.0_f32;
+      for color in colors {
+        let color = (*color as f32) / (65535 as f32);
+        sum += color.powf(2.2);
+      }
+      ((sum / (colors.len() as f32)).powf(1.0 / 2.2) * 65535_f32) as u16
+    }
+    let r = average_color(&colors[0]);
+    let g = average_color(&colors[1]);
+    let b = average_color(&colors[2]);
     (r as u16, g as u16, b as u16)
   }
   pub fn save_to_file(&self, path: impl AsRef<Path>, high_bits: bool) -> anyhow::Result<()> {
