@@ -1,4 +1,5 @@
 use std::io::{Read, Seek, SeekFrom};
+use std::path::Path;
 use byteordered::{Endian, Endianness};
 use byteordered::byteorder::ReadBytesExt;
 use crate::tiff::data_type::{UnsignedRational, SignedRational};
@@ -9,7 +10,7 @@ pub struct ByteStream {
 }
 
 impl ByteStream {
-  pub fn open(path: &str) -> std::io::Result<ByteStream> {
+  pub fn open(path: impl AsRef<Path>) -> std::io::Result<ByteStream> {
     let mut file = std::fs::File::open(path)?;
     let endian = {
       let mut header: [u8; 2] = [0, 0];

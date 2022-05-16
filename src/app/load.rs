@@ -1,9 +1,10 @@
+use std::path::Path;
 use crate::tiff;
 use log::{error, info};
 use crate::raw::{ArwDecoder, RawDecoder};
 
-pub fn load(path: &str) -> anyhow::Result<()> {
-  let mut stream = tiff::ByteStream::open(path)?;
+pub fn load(input_path: impl AsRef<Path>, output_path: impl AsRef<Path>) -> anyhow::Result<()>{
+  let mut stream = tiff::ByteStream::open(input_path)?;
   let mut parser = tiff::Parser::new(&mut stream);
   let tiff = parser.parse()?;
   tiff.inspect();
@@ -13,5 +14,7 @@ pub fn load(path: &str) -> anyhow::Result<()> {
     return Err(anyhow::Error::msg("This file is not ARW!"));
   }
   let img = decoder.decode()?;
+  img.save_to_file(output_path);
+
   Ok(())
 }

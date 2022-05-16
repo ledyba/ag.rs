@@ -5,6 +5,7 @@ mod app;
 mod tiff;
 mod raw;
 mod stream;
+mod img;
 
 fn main() -> anyhow::Result<()> {
   let mut log_builder = env_logger::Builder::from_default_env();
@@ -19,9 +20,14 @@ fn main() -> anyhow::Result<()> {
       .takes_value(false)
       .help("Show verbose message"))
     .subcommand(clap::App::new("load")
-      .arg(Arg::new("filename.arw")
+      .arg(Arg::new("input.arw")
         .help("File path to load")
         .index(1)
+        .takes_value(true)
+        .required(true))
+      .arg(Arg::new("output.png")
+        .help("File path to save")
+        .index(2)
         .takes_value(true)
         .required(true)));
   let m = app.get_matches();
@@ -34,8 +40,8 @@ fn main() -> anyhow::Result<()> {
     match command_name {
       "load" => {
         let m = m.subcommand_matches("load").unwrap();
-        if let Some(path) = m.value_of("filename.arw") {
-          return app::load(path);
+        if let (Some(input), Some(output)) = (m.value_of("input.arw"), m.value_of("output.png")) {
+          return app::load(input, output);
         }
       }
       cmd => {

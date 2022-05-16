@@ -75,7 +75,7 @@ impl <'a> Arw2Decompressor<'a> {
               std::cmp::min(0x7ff, p)
             }
           };
-          img.set(x + i as usize, y,p as u16);
+          img.set(x + (i*2) as usize, y,(p << 1) as u16);
         }
         if (x & 1) != 0 {
           x += 31;
