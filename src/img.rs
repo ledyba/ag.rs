@@ -1,8 +1,10 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufWriter;
 use std::path::Path;
 use log::info;
 use png::BitDepth;
+use png::Compression::Default;
 use crate::tiff::CFAPattern;
 
 pub struct RawImage {
@@ -56,6 +58,32 @@ impl RawImage {
       CFAPattern::Unknown(_) => (color, color, color),
     }
   }
+  pub fn get_mixed(&self, x: usize, y: usize) -> (u16, u16, u16) {
+    // FIXME: better denoising
+    let origin_x = x - (x % self.cfa_dim.0);
+    let origin_y = y - (y % self.cfa_dim.1);
+    let mut colors = [Vec::<u16>::new(), Vec::<u16>::new(), Vec::<u16>::new()];
+    for dy in 0..self.cfa_dim.1 {
+      for dx in 0..self.cfa_dim.0 {
+        let idx = self.calc_idx(origin_x + dx, origin_y + dy);
+        let color = self.data[idx] << 4;
+        match self.cfa_pattern[dy * self.cfa_dim.0 + dx] {
+          CFAPattern::R => colors[0].push(color),
+          CFAPattern::G => colors[1].push(color),
+          CFAPattern::B => colors[2].push(color),
+          CFAPattern::Unknown(_) => {
+            colors[0].push(color);
+            colors[1].push(color);
+            colors[2].push(color);
+          },
+        };
+      }
+    }
+    let r = colors[0].iter().map(|it| *it as u32).sum::<u32>() / colors[0].len() as u32;
+    let g = colors[1].iter().map(|it| *it as u32).sum::<u32>() / colors[1].len() as u32;
+    let b = colors[2].iter().map(|it| *it as u32).sum::<u32>() / colors[2].len() as u32;
+    (r as u16, g as u16, b as u16)
+  }
   pub fn save_to_file(&self, path: impl AsRef<Path>, high_bits: bool) -> anyhow::Result<()> {
     let file = File::create(path)?;
     let mut writer = BufWriter::new(file);
@@ -77,7 +105,7 @@ impl RawImage {
     let mut buff = Vec::<u8>::new();
     for y in 0..self.height {
       for x in 0..self.width {
-        let (r, g, b) = self.get(x, y);
+        let (r, g, b) = self.get_mixed(x, y);
         if high_bits {
           buff.push((r >> 8) as u8);
           buff.push((r & 0xff) as u8);
