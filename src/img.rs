@@ -81,11 +81,12 @@ impl RawImage {
     }
     fn average_color(colors: &Vec<u16>) -> u16 {
       let mut sum = 0.0_f32;
+      let count = colors.len() as f32;
       for color in colors {
         let color = (*color as f32) / (65535 as f32);
         sum += color.powf(2.2);
       }
-      ((sum / (colors.len() as f32)).powf(1.0 / 2.2) * 65535_f32) as u16
+      ((sum / count).powf(1.0 / 2.2) * 65535_f32) as u16
     }
     let r = average_color(&colors[0]);
     let g = average_color(&colors[1]);
