@@ -59,7 +59,7 @@ impl RawImage {
     }
   }
   pub fn get_mixed(&self, x: usize, y: usize) -> (u16, u16, u16) {
-    // FIXME: better denoising
+    // FIXME: better de-noising
     let origin_x = x - (x % self.cfa_dim.0);
     let origin_y = y - (y % self.cfa_dim.1);
     let mut colors = [Vec::<u16>::new(), Vec::<u16>::new(), Vec::<u16>::new()];
