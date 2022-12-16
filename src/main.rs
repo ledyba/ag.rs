@@ -1,5 +1,4 @@
-use clap::Arg;
-use log::LevelFilter;
+use clap::{Arg, ArgAction, value_parser};
 
 mod app;
 mod tiff;
@@ -7,48 +6,74 @@ mod raw;
 mod stream;
 mod img;
 
-fn main() -> anyhow::Result<()> {
-  let mut log_builder = env_logger::Builder::from_default_env();
-  let app = clap::App::new("ag")
-    .author("Kaede Fujisaki")
-    .about("ARW Parser and Image generator")
-    .setting(clap::AppSettings::ArgRequiredElseHelp)
-    .arg(Arg::new("verbose")
-      .long("verbose")
-      .short('v')
-      .required(false)
-      .takes_value(false)
-      .help("Show verbose message"))
-    .subcommand(clap::App::new("load")
-      .arg(Arg::new("input.arw")
-        .help("File path to load")
-        .index(1)
-        .takes_value(true)
-        .required(true))
-      .arg(Arg::new("output.png")
-        .help("File path to save")
-        .index(2)
-        .takes_value(true)
-        .required(true)));
-  let m = app.get_matches();
-  if m.is_present("verbose") {
-    log_builder.filter_level(LevelFilter::Debug);
-  }
-  log_builder.init();
+fn app() -> clap::Command {
+  clap::Command::new("ag")
+      .author("Kaede Fujisaki")
+      .about("ARW Parser and Image generator")
+      .arg(Arg::new("verbose")
+          .long("verbose")
+          .short('v')
+          .required(false)
+          .action(ArgAction::Count)
+          .value_parser(value_parser!(u8))
+          .help("Show verbose message"))
+      .subcommand(clap::Command::new("load")
+          .arg(Arg::new("input.arw")
+              .help("File path to load")
+              .index(1)
+              .action(ArgAction::Set)
+              .value_parser(value_parser!(String))
+              .required(true))
+          .arg(Arg::new("output.png")
+              .help("File path to save")
+              .index(2)
+              .action(ArgAction::Set)
+              .value_parser(value_parser!(String))
+              .required(true)))
+}
 
-  if let Some(command_name) = m.subcommand_name() {
-    match command_name {
-      "load" => {
-        let m = m.subcommand_matches("load").unwrap();
-        if let (Some(input), Some(output)) = (m.value_of("input.arw"), m.value_of("output.png")) {
-          return app::load(input, output);
-        }
-      }
-      cmd => {
-        return Err(anyhow::Error::msg(format!("Unknown command: {}", cmd)));
+fn setup_logger(log_level: log::LevelFilter) -> Result<(), fern::InitError> {
+  fern::Dispatch::new()
+      .format(|out, message, record| {
+        out.finish(format_args!(
+          "{}[{}][{}] {}",
+          chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+          record.target(),
+          record.level(),
+          message
+        ))
+      })
+      .level(log_level)
+      .chain(std::io::stdout())
+      .chain(fern::log_file("output.log")?)
+      .apply()?;
+  Ok(())
+}
+
+fn main() -> anyhow::Result<()> {
+  let app = app();
+  let m = app.get_matches();
+  let log_level = match m.get_one::<u8>("verbose") {
+    None | Some(0) => log::LevelFilter::Info,
+    Some(1) => log::LevelFilter::Debug,
+    _ => log::LevelFilter::Trace,
+  };
+  setup_logger(log_level)?;
+
+  let Some(command_name) = m.subcommand_name() else {
+    // Nothing to do!
+    return Err(anyhow::Error::msg("Please specify a subcommand to do."));
+  };
+  match command_name {
+    "load" => {
+      let m = m.subcommand_matches("load").unwrap();
+      if let (Some(input), Some(output)) = (m.get_one::<String>("input.arw"), m.get_one::<String>("output.png")) {
+        return app::load(input, output);
       }
     }
+    cmd => {
+      return Err(anyhow::Error::msg(format!("Unknown command: {}", cmd)));
+    }
   }
-  // Nothing to do!
-  return Err(anyhow::Error::msg("Please specify a subcommand to do."));
+  Ok(())
 }
