@@ -17,7 +17,7 @@ fn app() -> clap::Command {
           .action(ArgAction::Count)
           .value_parser(value_parser!(u8))
           .help("Show verbose message"))
-      .subcommand(clap::Command::new("load")
+      .subcommand(clap::Command::new("render")
           .arg(Arg::new("input.arw")
               .help("File path to load")
               .index(1)
