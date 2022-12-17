@@ -45,7 +45,7 @@ fn setup_logger(log_level: log::LevelFilter) -> Result<(), fern::InitError> {
       })
       .level(log_level)
       .chain(std::io::stdout())
-      .chain(fern::log_file("output.log")?)
+      //.chain(fern::log_file("output.log")?)
       .apply()?;
   Ok(())
 }
@@ -65,7 +65,7 @@ fn main() -> anyhow::Result<()> {
     return Err(anyhow::Error::msg("Please specify a subcommand to do."));
   };
   match command_name {
-    "load" => {
+    "render" => {
       let m = m.subcommand_matches("load").unwrap();
       if let (Some(input), Some(output)) = (m.get_one::<String>("input.arw"), m.get_one::<String>("output.png")) {
         return app::load(input, output);
