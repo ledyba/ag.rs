@@ -13,14 +13,14 @@
           "build",
           "--bin=ag",
           "--package=ag",
-          "--", "-v", "load", "sample/sample.arw"
+          "--", "-v", "render", "sample/sample.arw", "output.png"
         ],
         "filter": {
           "name": "ag",
           "kind": "bin"
         }
       },
-      "args": ["-v", "load", "sample/sample.arw"],
+      "args": ["-v", "render", "sample/sample.arw", "output.png"],
       "cwd": "${workspaceFolder}"
     },
     {
