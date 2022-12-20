@@ -1,2 +1,2 @@
-mod load;
-pub use load::render;
+mod render;
+pub use render::render;
