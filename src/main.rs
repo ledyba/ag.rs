@@ -68,7 +68,7 @@ fn main() -> anyhow::Result<()> {
     "render" => {
       let m = m.subcommand_matches("render").unwrap();
       if let (Some(input), Some(output)) = (m.get_one::<String>("input.arw"), m.get_one::<String>("output.png")) {
-        return app::load(input, output);
+        return app::render(input, output);
       }
     }
     cmd => {

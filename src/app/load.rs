@@ -3,7 +3,7 @@ use crate::tiff;
 use log::{error, info};
 use crate::raw::{ArwDecoder, RawDecoder};
 
-pub fn load(input_path: impl AsRef<Path>, output_path: impl AsRef<Path>) -> anyhow::Result<()>{
+pub fn render(input_path: impl AsRef<Path>, output_path: impl AsRef<Path>) -> anyhow::Result<()>{
   let mut stream = tiff::ByteStream::open(input_path)?;
   let mut parser = tiff::Parser::new(&mut stream);
   let tiff = parser.parse()?;
@@ -14,7 +14,7 @@ pub fn load(input_path: impl AsRef<Path>, output_path: impl AsRef<Path>) -> anyh
     return Err(anyhow::Error::msg("This file is not ARW!"));
   }
   let img = decoder.decode()?;
-  img.save_to_file(output_path, false);
+  img.save_to_file(output_path, false)?;
 
   Ok(())
 }

@@ -1,2 +1,2 @@
 mod load;
-pub use load::load;
+pub use load::render;
