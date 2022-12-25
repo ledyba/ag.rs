@@ -9,7 +9,7 @@ mod img;
 fn app() -> clap::Command {
   clap::Command::new("ag")
       .author("Kaede Fujisaki")
-      .about("ARW Parser and Image generator")
+      .about("ARW Parser and Image renderer")
       .arg(Arg::new("verbose")
           .long("verbose")
           .short('v')
