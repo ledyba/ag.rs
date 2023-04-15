@@ -71,6 +71,12 @@ pub enum CFAPattern {
 }
 
 #[derive(Clone, Debug)]
+pub struct CFAPatternDim {
+  pub width: usize,
+  pub height: usize,
+}
+
+#[derive(Clone, Debug)]
 pub enum YCbCrPositioning {
   CoSited,
   Undefined(u16)
@@ -262,10 +268,13 @@ impl ImageFileDirectory {
     })
   }
 
-  pub fn cfa_pattern_dim(&self) -> Option<(usize, usize)> {
+  pub fn cfa_pattern_dim(&self) -> Option<CFAPatternDim> {
     self.find(|it: &Entry| match it {
       Entry::CFARepeatPatternDim{rows, cols} => {
-        Some((*cols as usize, *rows as usize))
+        Some(CFAPatternDim {
+          height: *rows as usize,
+          width: *cols as usize,
+        })
       }
       _ => None,
     })

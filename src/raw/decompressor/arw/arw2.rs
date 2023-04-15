@@ -14,7 +14,7 @@ use std::cmp::min;
 use log::info;
 use crate::stream::{BitStream, ByteStream};
 use crate::raw::RawImage;
-use crate::tiff::{CFAPattern, Tiff};
+use crate::tiff::{CFAPatternDim, CFAPattern, Tiff};
 
 pub struct Arw2Decompressor<'a> {
   stream: &'a mut ByteStream,
@@ -24,7 +24,7 @@ pub struct Arw2Decompressor<'a> {
   data_offset: usize,
   data_size: usize,
   cfa_pattern: &'a Vec<CFAPattern>,
-  cfa_dim: (usize, usize),
+  cfa_dim: CFAPatternDim,
 }
 
 impl <'a> Arw2Decompressor<'a> {
@@ -36,7 +36,7 @@ impl <'a> Arw2Decompressor<'a> {
     data_offset: usize,
     data_size: usize,
     cfa_pattern: &'a Vec<CFAPattern>,
-    cfa_dim: (usize, usize),
+    cfa_dim: CFAPatternDim,
   ) -> Self {
     Self {
       stream,
@@ -55,7 +55,7 @@ impl <'a> Arw2Decompressor<'a> {
       self.width,
       self.height,
       self.cfa_pattern.clone(),
-      self.cfa_dim,
+      self.cfa_dim.clone(),
     );
     for y in 0..self.height {
       let offset = self.data_offset + self.width * y;

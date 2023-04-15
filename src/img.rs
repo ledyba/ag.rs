@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufWriter;
@@ -5,14 +6,14 @@ use std::path::Path;
 use log::info;
 use png::BitDepth;
 use png::Compression::Default;
-use crate::tiff::CFAPattern;
+use crate::tiff::{CFAPatternDim, CFAPattern};
 
 pub struct RawImage {
   width: usize,
   height: usize,
   data: Vec<u16>,
   cfa_pattern: Vec<CFAPattern>,
-  cfa_dim: (usize, usize),
+  cfa_dim: CFAPatternDim,
 }
 
 impl RawImage {
@@ -20,7 +21,7 @@ impl RawImage {
     width: usize,
     height: usize,
     cfa_pattern: Vec<CFAPattern>,
-    cfa_dim: (usize, usize),
+    cfa_dim: CFAPatternDim,
   ) -> Self {
     Self {
       width,
@@ -49,25 +50,26 @@ impl RawImage {
   pub fn get(&self, x: usize, y: usize) -> (u16, u16, u16) {
     let idx = self.calc_idx(x,y);
     let color = self.data[idx] << 4;
-    let row = y % self.cfa_dim.1;
-    let col = x % self.cfa_dim.0;
-    match self.cfa_pattern[row * self.cfa_dim.0 + col] {
+    let row = y % self.cfa_dim.height;
+    let col = x % self.cfa_dim.width;
+    match self.cfa_pattern[row * self.cfa_dim.width + col] {
       CFAPattern::R => (color, 0, 0),
       CFAPattern::G => (0, color, 0),
       CFAPattern::B => (0, 0, color),
       CFAPattern::Unknown(_) => (color, color, color),
     }
   }
+
   pub fn get_mixed(&self, x: usize, y: usize) -> (u16, u16, u16) {
     // FIXME: better de-noising
-    let origin_x = x - (x % self.cfa_dim.0);
-    let origin_y = y - (y % self.cfa_dim.1);
     let mut colors = [Vec::<u16>::new(), Vec::<u16>::new(), Vec::<u16>::new()];
-    for dy in 0..self.cfa_dim.1 {
-      for dx in 0..self.cfa_dim.0 {
-        let idx = self.calc_idx(origin_x + dx, origin_y + dy);
+    for dy in 0..self.cfa_dim.height {
+      for dx in 0..self.cfa_dim.width {
+        let x = min(x + dx, self.width - 1);
+        let y = min(y + dy, self.height - 1);
+        let idx = self.calc_idx(x, y);
         let color = self.data[idx] << 4;
-        match self.cfa_pattern[dy * self.cfa_dim.0 + dx] {
+        match self.cfa_pattern[(y % self.cfa_dim.height) * self.cfa_dim.width + (x % self.cfa_dim.width)] {
           CFAPattern::R => colors[0].push(color),
           CFAPattern::G => colors[1].push(color),
           CFAPattern::B => colors[2].push(color),
@@ -79,6 +81,7 @@ impl RawImage {
         };
       }
     }
+
     fn average_color(colors: &Vec<u16>) -> u16 {
       let mut sum = 0.0_f32;
       let count = colors.len() as f32;
