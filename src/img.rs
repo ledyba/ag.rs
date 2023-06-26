@@ -43,10 +43,12 @@ impl RawImage {
   fn calc_idx(&self, x: usize, y: usize) -> usize {
     self.width * y + x
   }
+
   pub fn set(&mut self, x: usize, y: usize, v: u16) {
     let idx = self.calc_idx(x,y);
     self.data[idx] = v;
   }
+
   pub fn get(&self, x: usize, y: usize) -> (u16, u16, u16) {
     let idx = self.calc_idx(x,y);
     let color = self.data[idx] << 4;
@@ -96,11 +98,13 @@ impl RawImage {
     let b = average_color(&colors[2]);
     (r as u16, g as u16, b as u16)
   }
+
   pub fn save_to_file(&self, path: impl AsRef<Path>, high_bits: bool) -> anyhow::Result<()> {
     let file = File::create(path)?;
     let mut writer = BufWriter::new(file);
     self.save(writer, high_bits)
   }
+
   pub fn save<F: std::io::Write>(&self, writer: BufWriter<F>, high_bits: bool) -> anyhow::Result<()> {
     let mut encoder = png::Encoder::new(writer, self.width as u32, self.height as u32); // Width is 2 pixels and height is 1.
     encoder.set_color(png::ColorType::Rgb);
@@ -113,6 +117,7 @@ impl RawImage {
     let pixels = self.create_pixels(high_bits);
     writer.write_image_data(&pixels).map_err(|it| anyhow::Error::from(it))
   }
+
   fn create_pixels(&self, high_bits: bool) -> Vec<u8> {
     let mut buff = Vec::<u8>::new();
     for y in 0..self.height {
