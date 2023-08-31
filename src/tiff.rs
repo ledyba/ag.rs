@@ -201,9 +201,9 @@ impl ImageFileDirectory {
     &self.entries
   }
 
-  pub fn find<'a, F, R>(&'a self, f: F) -> Option<R>
+  pub fn find<F, R>(&self, f: F) -> Option<R>
   where
-    F: Fn(&'a Entry) -> Option<R>
+    F: Fn(&Entry) -> Option<R>
   {
     for entry in &self.entries {
       let r = f(entry);
