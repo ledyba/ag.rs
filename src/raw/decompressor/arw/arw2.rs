@@ -76,16 +76,16 @@ impl <'a> Arw2Decompressor<'a> {
         }
         for i in 0..16 {
           let p =
-          if i == i_max {
-            max
-          } else {
-            if i == i_min {
-              min
+            if i == i_max {
+              max
             } else {
-              let p = (bits.read_bits(7)? << sh) + min;
-              std::cmp::min(0x7ff, p)
-            }
-          };
+              if i == i_min {
+                min
+              } else {
+                let p = (bits.read_bits(7)? << sh) + min;
+                std::cmp::min(0x7ff, p)
+              }
+            };
           img.set(x + (i*2) as usize, y,(p << 1) as u16);
         }
         if (x & 1) != 0 {
