@@ -10,8 +10,6 @@ rawspeed
 
 */
 
-use std::cmp::min;
-use log::info;
 use crate::stream::{BitStream, ByteStream};
 use crate::raw::RawImage;
 use crate::tiff::{CFAPatternDim, CFAPattern, Tiff};
