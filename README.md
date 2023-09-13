@@ -2,6 +2,8 @@
 
 # References
 
+- Camera
+  - [デジタルカメラ講座 | デジタルカメラ LUMIX(ルミックス) | お客様サポート | Panasonic](https://av.jpn.support.panasonic.com/support/dsc/knowhow/index.html)
 - TIFF format
   - [Tagged Image File Format - Wikipedia](https://ja.wikipedia.org/wiki/Tagged_Image_File_Format)
   - [TIFF(Adobe)](https://www.adobe.io/open/standards/TIFF.html)
