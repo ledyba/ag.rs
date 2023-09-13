@@ -5,6 +5,7 @@
 - Camera
   - [デジタルカメラ講座 | デジタルカメラ LUMIX(ルミックス) | お客様サポート | Panasonic](https://av.jpn.support.panasonic.com/support/dsc/knowhow/index.html)
   - [ベイヤーパターンの理解と画像処理におけるISPの意義 - e-con Systems](https://www.e-consystems.com/blog/camera/ja/technologies/understanding-bayer-pattern-and-significance-of-an-isp-in-image-processing/)
+  - [減色法によるカラー写真の仕組み　写真の仕組み（６）: 光と色と](https://optica.cocolog-nifty.com/blog/2012/05/5-4a32.html)
 - TIFF format
   - [Tagged Image File Format - Wikipedia](https://ja.wikipedia.org/wiki/Tagged_Image_File_Format)
   - [TIFF(Adobe)](https://www.adobe.io/open/standards/TIFF.html)
