@@ -67,9 +67,9 @@ fn main() -> anyhow::Result<()> {
   match command_name {
     "render" => {
       let m = m.subcommand_matches("render").unwrap();
-      if let (Some(input), Some(output)) = (m.get_one::<String>("input.arw"), m.get_one::<String>("output.png")) {
-        return app::render(input, output);
-      }
+      let input = m.get_one::<String>("input.arw").expect("[BUG] No input!");
+      let output = m.get_one::<String>("output.png").expect("[BUG] No output!");
+      return app::render(input, output);
     }
     cmd => {
       return Err(anyhow::Error::msg(format!("Unknown command: {}", cmd)));
