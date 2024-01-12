@@ -64,16 +64,15 @@ fn main() -> anyhow::Result<()> {
     // Nothing to do!
     return Err(anyhow::Error::msg("Please specify a subcommand to do."));
   };
-  match command_name {
+  return match command_name {
     "render" => {
       let m = m.subcommand_matches("render").unwrap();
       let input = m.get_one::<String>("input.arw").expect("[BUG] No input!");
       let output = m.get_one::<String>("output.png").expect("[BUG] No output!");
-      return app::render(input, output);
+      app::render(input, output)
     }
     cmd => {
-      return Err(anyhow::Error::msg(format!("Unknown command: {}", cmd)));
+      Err(anyhow::Error::msg(format!("Unknown command: {}", cmd)))
     }
   }
-  Ok(())
 }
