@@ -16,6 +16,8 @@
   - [TIFF, Revision 6.0](https://www.loc.gov/preservation/digital/formats/fdd/fdd000022.shtml)
     - [TIFF tags](https://www.loc.gov/preservation/digital/formats/content/tiff_tags.shtml)
   - [TIFF tags](https://www.loc.gov/preservation/digital/formats/content/tiff_tags.shtml)
+  - Tags
+    - [TIFF File Format](https://www.awaresystems.be/imaging/tiff.html)
 - TIFF/EP
   - [TIFF/EP - Wikipedia](https://en.wikipedia.org/wiki/TIFF/EP)
   - [ISO - ISO 12234-2:2001 - Electronic still-picture imaging — Removable memory — Part 2: TIFF/EP image data format](https://www.iso.org/standard/29377.html)
