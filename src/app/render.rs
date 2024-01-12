@@ -1,6 +1,5 @@
 use std::path::Path;
 use crate::tiff;
-use log::{error, info};
 use crate::raw::{ArwDecoder, RawDecoder};
 
 pub fn render(input_path: impl AsRef<Path>, output_path: impl AsRef<Path>) -> anyhow::Result<()>{

@@ -1,11 +1,8 @@
 use std::cmp::min;
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufWriter;
 use std::path::Path;
-use log::info;
 use png::BitDepth;
-use png::Compression::Default;
 use crate::tiff::{CFAPatternDim, CFAPattern};
 
 pub struct RawImage {
