@@ -64,7 +64,7 @@ fn main() -> anyhow::Result<()> {
     // Nothing to do!
     return Err(anyhow::Error::msg("Please specify a subcommand to do."));
   };
-  return match command_name {
+  match command_name {
     "render" => {
       let m = m.subcommand_matches("render").unwrap();
       let input = m.get_one::<String>("input.arw").expect("[BUG] No input!");
