@@ -12,6 +12,7 @@
     - [Developer Resources](https://web.archive.org/web/20160306201233/http://partners.adobe.com/public/developer/tiff/index.html#spec)
   - [TIFF/RAW(JpegAnalyzer)](https://hp.vector.co.jp/authors/VA032610/operation/TiffAnalyze.htm)
   - [CGファイル概説　第5章　TIFFファイル](http://www.snap-tck.com/room03/c02/cg/cg05_01.html)
+  - [Tiffの話](https://zenn.dev/mith_mmk/articles/076ef011b063fa)
   - [JHOVE | TIFF-hul Module](https://jhove.openpreservation.org/modules/tiff/)
   - [TIFF, Revision 6.0](https://www.loc.gov/preservation/digital/formats/fdd/fdd000022.shtml)
     - [TIFF tags](https://www.loc.gov/preservation/digital/formats/content/tiff_tags.shtml)
