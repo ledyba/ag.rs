@@ -27,3 +27,4 @@
   - [Digital Negative (DNG), Adobe DNG Converter | Adobe Photoshop](https://helpx.adobe.com/camera-raw/digital-negative.html)
 - Other projects
   - [LibRaw/LibRaw: LibRaw is a library for reading RAW files from digital cameras](https://github.com/LibRaw/LibRaw)
+  - [darktable-org/rawspeed: fast raw decoding library](https://github.com/darktable-org/rawspeed)
