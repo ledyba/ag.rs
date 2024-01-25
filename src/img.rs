@@ -85,7 +85,7 @@ impl RawImage {
       let mut sum = 0.0_f32;
       let count = colors.len() as f32;
       for color in colors {
-        sum += (*color as f32 / 65535.0).powf(2.2);
+        sum += *color as f32 / 65535.0;
       }
       let avg = sum / count;
       (avg.powf(1.0/2.2) * 65535.0) as u16
