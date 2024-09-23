@@ -5,7 +5,7 @@
       "label": "rust: cargo run",
       "type": "cargo",
       "command": "run",
-      "args": ["--", "-v", "load", "sample/sample.arw"],
+      "args": ["--", "-v", "render", "sample/photo.arw", "output.png"],
       "problemMatcher": [
         "$rustc"
       ],
