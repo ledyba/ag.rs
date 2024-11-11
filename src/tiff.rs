@@ -2,7 +2,7 @@ pub mod parser;
 pub mod dumper;
 pub mod data_type;
 
-use log::info;
+use tracing::info;
 pub use crate::stream::*;
 pub use parser::*;
 pub use data_type::*;

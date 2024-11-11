@@ -9,9 +9,9 @@ license = "AGPL-3.0-or-later"
 
 [dependencies]
 anyhow="1.0.91"
-log = "0.4.22"
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = [ "std", "env-filter", "chrono" ] }
 chrono = "0.4.38"
-fern = "0.7.0"
 clap = "4.5.20"
 byteordered = "0.6.0"
 png = "0.17.14"

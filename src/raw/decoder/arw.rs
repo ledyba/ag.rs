@@ -1,5 +1,4 @@
-use std::fmt::format;
-use log::info;
+use tracing::info;
 use crate::raw::Arw2Decompressor;
 use crate::raw::decoder::RawImage;
 use crate::tiff::{Compression, Entry, Tiff};

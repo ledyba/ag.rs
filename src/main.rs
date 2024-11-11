@@ -32,33 +32,23 @@ fn app() -> clap::Command {
               .required(true)))
 }
 
-fn setup_logger(log_level: log::LevelFilter) -> Result<(), fern::InitError> {
-  fern::Dispatch::new()
-      .format(|out, message, record| {
-        out.finish(format_args!(
-          "{}[{}][{}] {}",
-          chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
-          record.target(),
-          record.level(),
-          message
-        ))
-      })
-      .level(log_level)
-      .chain(std::io::stdout())
-      //.chain(fern::log_file("output.log")?)
-      .apply()?;
-  Ok(())
-}
-
 fn main() -> anyhow::Result<()> {
+  use tracing_subscriber::util::SubscriberInitExt;
   let app = app();
   let m = app.get_matches();
   let log_level = match m.get_one::<u8>("verbose") {
-    None | Some(0) => log::LevelFilter::Info,
-    Some(1) => log::LevelFilter::Debug,
-    _ => log::LevelFilter::Trace,
+    None | Some(0) => tracing::Level::INFO,
+    Some(1) => tracing::Level::DEBUG,
+    _ => tracing::Level::TRACE,
   };
-  setup_logger(log_level)?;
+  tracing_subscriber::fmt()
+    .with_timer(tracing_subscriber::fmt::time::ChronoLocal::new("%Y/%m/%d %H:%M:%S%.3f".to_string()))
+    .with_max_level(log_level)
+    .with_line_number(true)
+    .with_file(true)
+    .with_writer(std::io::stderr)
+    .finish()
+    .init();
 
   let Some(command_name) = m.subcommand_name() else {
     // Nothing to do!
